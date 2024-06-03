@@ -1,0 +1,8 @@
+{
+  "name": "penny-wise",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/TijanAyo/penny-wise.git",
+  "author": "TijanAyo <ayomidetijani6@gmail.com>",
+  "license": "MIT"
+}
