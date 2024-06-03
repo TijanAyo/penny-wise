@@ -4,5 +4,29 @@
   "main": "index.js",
   "repository": "https://github.com/TijanAyo/penny-wise.git",
   "author": "TijanAyo <ayomidetijani6@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "format": "prettier --write \"**/*.ts\"",
+    "postinstall": "npm run build",
+    "start": "npm run build && node ./dist/server.js",
+    "start:dev": "nodemon ./src/server.ts"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.4.1",
+    "morgan": "^1.10.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/morgan": "^1.9.9",
+    "nodemon": "^3.1.2",
+    "prettier": "^3.3.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
 }
