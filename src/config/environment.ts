@@ -8,6 +8,8 @@ const environmentSchema = z.object({
   LOCAL_MONGO_URI: z.string(),
   PORT: z.string(),
   SALT_ROUND: z.string(),
+  JWT_SECRET: z.string(),
+  JWT_EXPIRES_IN: z.string(),
 });
 
 export const environment = environmentSchema.parse(process.env);
