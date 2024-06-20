@@ -44,3 +44,11 @@ export interface Iuser extends Document {
   address: Address;
   nextOfKin: NextOfKin;
 }
+
+export interface registerPayload {
+  email: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  password: string;
+}

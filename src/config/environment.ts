@@ -7,6 +7,7 @@ const environmentSchema = z.object({
   MONGO_URI: z.string(),
   LOCAL_MONGO_URI: z.string(),
   PORT: z.string(),
+  SALT_ROUND: z.string(),
 });
 
 export const environment = environmentSchema.parse(process.env);
