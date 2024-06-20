@@ -1,3 +1,6 @@
+import { injectable } from "tsyringe";
+
+@injectable()
 export class AuthService {
   public async register() {
     return "This is the register service";
