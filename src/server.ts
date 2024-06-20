@@ -1,3 +1,5 @@
+import "reflect-metadata";
+
 import * as dotenv from "dotenv";
 dotenv.config();
 import express, { Express, Request, Response } from "express";

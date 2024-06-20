@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
+import { injectable } from "tsyringe";
 
+@injectable()
 export class AuthController {
   public async lookUp(req: Request, res: Response) {
     try {
