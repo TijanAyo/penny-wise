@@ -52,3 +52,10 @@ export interface registerPayload {
   phoneNumber: string;
   password: string;
 }
+
+export interface loginPayload {
+  email?: string | null;
+  phoneNumber?: string | null;
+  username?: string | null;
+  password: string;
+}

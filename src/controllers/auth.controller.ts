@@ -21,7 +21,8 @@ export class AuthController {
 
   public async login(req: Request, res: Response) {
     try {
-      // code goes here
+      const result = await this.authService.login(req.body);
+      return res.status(200).json(result);
     } catch (err: any) {
       return await this.errorHandler.handleCustomError(err, res);
     }

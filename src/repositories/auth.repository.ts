@@ -4,7 +4,7 @@ import { badRequestException } from "../helpers";
 
 @injectable()
 export class AuthRepository {
-  public async lookUp(email: string) {
+  async findByEmail(email: string) {
     try {
       return await User.findOne({ emailAddress: email });
     } catch (err: any) {
@@ -13,7 +13,25 @@ export class AuthRepository {
     }
   }
 
-  public async createUser(
+  async findByPhoneNumber(phoneNumber: string) {
+    try {
+      return await User.findOne({ phoneNumber });
+    } catch (err: any) {
+      console.error("Error looking up user by phone-number:", err);
+      throw err;
+    }
+  }
+
+  async findByUsername(username: string) {
+    try {
+      return await User.findOne({ username });
+    } catch (err: any) {
+      console.error("Error looking up user by username:", err);
+      throw err;
+    }
+  }
+
+  async createUser(
     email: string,
     firstName: string,
     lastName: string,
