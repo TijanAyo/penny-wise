@@ -10,6 +10,8 @@ const environmentSchema = z.object({
   SALT_ROUND: z.string(),
   JWT_SECRET: z.string(),
   JWT_EXPIRES_IN: z.string(),
+  RESEND_ACCESS_KEY: z.string(),
+  MAILER_EMAIL_ADDRESS: z.string(),
 });
 
 export const environment = environmentSchema.parse(process.env);
