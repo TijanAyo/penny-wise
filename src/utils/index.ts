@@ -20,3 +20,8 @@ export const generateAccessToken = async (userId: string) => {
     expiresIn: environment.JWT_EXPIRES_IN,
   });
 };
+
+export const generateRandomOTP = async () => {
+  const otp = Math.floor(100000 + Math.random() * 900000);
+  return otp.toString();
+};

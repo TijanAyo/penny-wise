@@ -16,11 +16,20 @@ import {
   registerSchema,
 } from "../validations";
 import { ZodError } from "zod";
-import { compareHash, generateAccessToken, hashPayload } from "../utils";
+import {
+  compareHash,
+  generateAccessToken,
+  generateRandomOTP,
+  hashPayload,
+} from "../utils";
+import { SendMails } from "../emails";
 
 @injectable()
 export class AuthService {
-  constructor(private readonly authRepository: AuthRepository) {}
+  constructor(
+    private readonly authRepository: AuthRepository,
+    private readonly mailService: SendMails,
+  ) {}
 
   public async register(payload: registerPayload) {
     try {
@@ -107,10 +116,15 @@ export class AuthService {
         throw new badRequestException("Invalid credentials, kindly try again");
       }
 
-      // create random 6 digit code
-      //  store random code on redis for temporary storage
+      const OTP = await generateRandomOTP();
+      //  store random code on redis for temp storage
 
       // queue sending mail to user
+      await this.mailService.forgotPasswordMail(
+        user.emailAddress,
+        user.firstName,
+        OTP,
+      );
 
       return AppResponse(
         null,
