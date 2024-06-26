@@ -5,8 +5,16 @@ import {
   validationException,
 } from "../helpers";
 import { AuthRepository } from "../repositories";
-import { loginPayload, registerPayload } from "../interface";
-import { loginSchema, registerSchema } from "../validations";
+import {
+  forgotPasswordPayload,
+  loginPayload,
+  registerPayload,
+} from "../interface";
+import {
+  forgotPasswordSchema,
+  loginSchema,
+  registerSchema,
+} from "../validations";
 import { ZodError } from "zod";
 import { compareHash, generateAccessToken, hashPayload } from "../utils";
 
@@ -40,25 +48,23 @@ export class AuthService {
       // TODO: Send a verification mail to the user
 
       return AppResponse(null, "Account registeration successful", true);
-    } catch (err: any) {
-      if (err instanceof ZodError) {
-        throw new validationException(err.message);
+    } catch (error: any) {
+      if (error instanceof ZodError) {
+        throw new validationException(error.message);
       }
-      throw err;
+      throw error;
     }
   }
 
   public async login(payload: loginPayload) {
     try {
-      const { email, phoneNumber, username, password } =
+      const { email, username, password } =
         await loginSchema.parseAsync(payload);
 
       let user;
 
       if (email) {
         user = await this.authRepository.findByEmail(email);
-      } else if (phoneNumber) {
-        user = await this.authRepository.findByPhoneNumber(phoneNumber);
       } else if (username) {
         user = await this.authRepository.findByUsername(username);
       }
@@ -76,14 +82,57 @@ export class AuthService {
 
       return AppResponse(
         { accessToken: token },
-        "This is the login service",
+        "Authorization successful",
         true,
       );
-    } catch (err: any) {
-      if (err instanceof ZodError) {
-        throw new validationException(err.message);
+    } catch (error: any) {
+      if (error instanceof ZodError) {
+        throw new validationException(error.message);
       }
-      throw err;
+      throw error;
     }
+  }
+
+  public async forgotPassword(payload: forgotPasswordPayload) {
+    try {
+      let user;
+
+      const { email } = await forgotPasswordSchema.parseAsync(payload);
+
+      if (email) {
+        user = await this.authRepository.findByEmail(email);
+      }
+
+      if (!user) {
+        throw new badRequestException("Invalid credentials, kindly try again");
+      }
+
+      // create random 6 digit code
+      //  store random code on redis for temporary storage
+
+      // queue sending mail to user
+
+      return AppResponse(
+        null,
+        "If an account exists for the email, you will receive a password reset link",
+        true,
+      );
+    } catch (error: any) {
+      if (error instanceof ZodError) {
+        throw new validationException(error.message);
+      }
+      throw error;
+    }
+  }
+
+  public async resetPassword() {
+    // validate input
+    // create a validate otp middleware
+    // - This will check the input of the user with the otp value stored on redis
+    // - If this is successful
+    // - Hash new password and save to database
+    // -If not successful
+    // - Return an invalid OTP, check input and try again
+    // check the provided
   }
 }

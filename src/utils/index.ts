@@ -3,7 +3,7 @@ import { environment } from "../config";
 import jwt from "jsonwebtoken";
 
 export const hashPayload = async (data: string) => {
-  const salt = Number(process.env.SALT);
+  const salt = Number(environment.SALT_ROUND);
   if (isNaN(salt)) {
     throw new Error("Invalid SALT environment variable");
   }

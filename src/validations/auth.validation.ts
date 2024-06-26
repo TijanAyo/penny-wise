@@ -5,7 +5,7 @@ export const registerSchema = z.object({
   email: z.string().email().trim().toLowerCase(),
   firstName: z.string().trim().max(20).trim().toLowerCase(),
   lastName: z.string().max(20).trim().toLowerCase(),
-  phoneNumber: z.string().trim().max(20).trim(),
+  phoneNumber: z.string().trim().max(20).trim().optional(),
   password: z.string().trim().max(20).trim(),
 });
 
@@ -13,9 +13,12 @@ export const loginSchema = z
   .object({
     email: z.string().email().trim().toLowerCase().optional(),
     username: z.string().trim().trim().optional(),
-    phoneNumber: z.string().trim().optional(),
     password: z.string().trim().trim(),
   })
-  .refine((data) => data.email || data.phoneNumber || data.username, {
-    message: "One of email, phoneNumber, or username must be provided",
+  .refine((data) => data.email || data.username, {
+    message: "One of email, or username must be provided",
   });
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email().trim().toLowerCase(),
+});
