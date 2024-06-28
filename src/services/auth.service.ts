@@ -113,13 +113,16 @@ export class AuthService {
       }
 
       if (!user) {
-        throw new badRequestException("Invalid credentials, kindly try again");
+        throw new badRequestException(
+          "Invalid credentials, email not associated with any user",
+        );
       }
 
       const OTP = await generateRandomOTP();
-      //  store random code on redis for temp storage
 
-      // queue sending mail to user
+      await this.authRepository.storeOTP(user.emailAddress, OTP);
+
+      // TODO: queue sending mail to user
       await this.mailService.forgotPasswordMail(
         user.emailAddress,
         user.firstName,

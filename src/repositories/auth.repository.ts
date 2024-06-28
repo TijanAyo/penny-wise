@@ -1,6 +1,8 @@
 import { injectable } from "tsyringe";
 import User from "../models/user.model";
 import { badRequestException } from "../helpers";
+import redisClient from "../config/redis";
+import { hashPayload } from "../utils";
 
 @injectable()
 export class AuthRepository {
@@ -52,6 +54,22 @@ export class AuthRepository {
       return user;
     } catch (err: any) {
       console.error("Error creating user:", err);
+      throw err;
+    }
+  }
+
+  async storeOTP(email: string, otp_code: string) {
+    try {
+      const hashEmail = await hashPayload(email);
+      let redisKey = `otp_validation:${hashEmail}`;
+
+      // Store OTP and validation status in a hash
+      await redisClient.HSET(redisKey, { otp: otp_code, isValidated: "false" });
+
+      // TTL 1hour
+      await redisClient.expire(redisKey, 3600);
+    } catch (err: any) {
+      console.error("Error storing otp in redis database", err);
       throw err;
     }
   }

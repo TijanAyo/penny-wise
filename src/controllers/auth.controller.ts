@@ -14,8 +14,8 @@ export class AuthController {
     try {
       const result = await this.authService.register(req.body);
       return res.status(201).json(result);
-    } catch (err: any) {
-      return await this.errorHandler.handleCustomError(err, res);
+    } catch (error: any) {
+      return await this.errorHandler.handleCustomError(error, res);
     }
   }
 
@@ -23,8 +23,17 @@ export class AuthController {
     try {
       const result = await this.authService.login(req.body);
       return res.status(200).json(result);
-    } catch (err: any) {
-      return await this.errorHandler.handleCustomError(err, res);
+    } catch (error: any) {
+      return await this.errorHandler.handleCustomError(error, res);
+    }
+  }
+
+  public async forgotPassword(req: Request, res: Response) {
+    try {
+      const result = await this.authService.forgotPassword(req.body);
+      return res.status(200).json(result);
+    } catch (error: any) {
+      return await this.errorHandler.handleCustomError(error, res);
     }
   }
 }

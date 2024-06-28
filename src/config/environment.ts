@@ -12,6 +12,9 @@ const environmentSchema = z.object({
   JWT_EXPIRES_IN: z.string(),
   RESEND_ACCESS_KEY: z.string(),
   MAILER_EMAIL_ADDRESS: z.string(),
+  REDIS_PASSWORD: z.string(),
+  REDIS_HOST: z.string(),
+  REDIS_PORT: z.string(),
 });
 
 export const environment = environmentSchema.parse(process.env);
