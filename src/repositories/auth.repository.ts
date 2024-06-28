@@ -2,7 +2,7 @@ import { injectable } from "tsyringe";
 import User from "../models/user.model";
 import { badRequestException } from "../helpers";
 import redisClient from "../config/redis";
-import { hashPayload } from "../utils";
+import { cryptHash } from "../utils";
 
 @injectable()
 export class AuthRepository {
@@ -58,18 +58,67 @@ export class AuthRepository {
     }
   }
 
+  async updatePassword(email: string, password: string) {
+    try {
+      const user = await User.findOneAndUpdate({
+        emailAddress: email,
+        password,
+      });
+
+      if (!user) throw new badRequestException("Password could not be saved");
+
+      return true;
+    } catch (err: any) {
+      console.error("Error updating user password", err);
+      throw err;
+    }
+  }
+
   async storeOTP(email: string, otp_code: string) {
     try {
-      const hashEmail = await hashPayload(email);
+      const hashEmail = await cryptHash(email);
       let redisKey = `otp_validation:${hashEmail}`;
+      let otpExpiresIn = new Date(Date.now() + 15 * 60 * 1000); // 15 min
 
       // Store OTP and validation status in a hash
-      await redisClient.HSET(redisKey, { otp: otp_code, isValidated: "false" });
+      await redisClient.HSET(redisKey, {
+        otp: otp_code,
+        isValidated: "false",
+        otpExpiresIn: String(otpExpiresIn),
+      });
 
       // TTL 1hour
       await redisClient.expire(redisKey, 3600);
     } catch (err: any) {
       console.error("Error storing otp in redis database", err);
+      throw err;
+    }
+  }
+
+  async validateOTP(email: string, otp_code: string) {
+    try {
+      const hashEmail = await cryptHash(email);
+      let redisKey = `otp_validation:${hashEmail}`;
+
+      const [otpCode, isValidated, otpExpiresIn] = await Promise.all([
+        redisClient.HGET(redisKey, "otpCode"),
+        redisClient.HGET(redisKey, "isValidated"),
+        redisClient.HGET(redisKey, "otpExpiresIn"),
+      ]);
+
+      console.log(otpCode, isValidated, otpExpiresIn);
+
+      // check if the code has not expired
+      // - return OTP code has expired
+      // check if the code matches
+      // - Invalid OTP Code
+
+      // check if this code has been used isValidated is true
+      // - Invalida OTP code, code has been utilized
+
+      // return true
+    } catch (err: any) {
+      console.error("Error validating otp in redis database", err);
       throw err;
     }
   }

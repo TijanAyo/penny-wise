@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import { environment } from "../config";
 import jwt from "jsonwebtoken";
+import { createHash } from "crypto";
 
 export const hashPayload = async (data: string) => {
   const salt = Number(environment.SALT_ROUND);
@@ -24,4 +25,8 @@ export const generateAccessToken = async (userId: string) => {
 export const generateRandomOTP = async () => {
   const otp = Math.floor(100000 + Math.random() * 900000);
   return otp.toString();
+};
+
+export const cryptHash = async (data: string) => {
+  return createHash("sha256").update(data).digest("hex");
 };

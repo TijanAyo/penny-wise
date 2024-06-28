@@ -9,11 +9,13 @@ import {
   forgotPasswordPayload,
   loginPayload,
   registerPayload,
+  resetPasswordPayload,
 } from "../interface";
 import {
   forgotPasswordSchema,
   loginSchema,
   registerSchema,
+  resetPasswordSchema,
 } from "../validations";
 import { ZodError } from "zod";
 import {
@@ -142,7 +144,30 @@ export class AuthService {
     }
   }
 
-  public async resetPassword() {
+  public async resetPassword(payload: resetPasswordPayload) {
+    try {
+      let user;
+
+      const { email, otpCode, newPassword, confirmPassword } =
+        await resetPasswordSchema.parseAsync(payload);
+
+      if (email) {
+        user = await this.authRepository.findByEmail(email);
+      }
+
+      if (!user) {
+        throw new badRequestException(
+          "Invalid credentials, email not associated with any user",
+        );
+      }
+    } catch (error: any) {
+      if (error instanceof ZodError) {
+        throw new validationException(error.message);
+      }
+      throw error;
+    }
+    // check if the otp has not existed for more than 10 min
+    // if so Invaid OTP / OTP expired
     // validate input
     // create a validate otp middleware
     // - This will check the input of the user with the otp value stored on redis

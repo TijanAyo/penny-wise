@@ -62,3 +62,10 @@ export interface loginPayload {
 export interface forgotPasswordPayload {
   email: string;
 }
+
+export interface resetPasswordPayload {
+  email: string;
+  otpCode: string;
+  newPassword: string;
+  confirmPassword: string;
+}

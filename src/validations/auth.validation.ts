@@ -13,7 +13,7 @@ export const loginSchema = z
   .object({
     email: z.string().email().trim().toLowerCase().optional(),
     username: z.string().trim().trim().optional(),
-    password: z.string().trim().trim(),
+    password: z.string().trim(),
   })
   .refine((data) => data.email || data.username, {
     message: "One of email, or username must be provided",
@@ -21,4 +21,11 @@ export const loginSchema = z
 
 export const forgotPasswordSchema = z.object({
   email: z.string().email().trim().toLowerCase(),
+});
+
+export const resetPasswordSchema = z.object({
+  email: z.string().email().trim().toLowerCase(),
+  otpCode: z.string().trim(),
+  newPassword: z.string().trim(),
+  confirmPassword: z.string().trim(),
 });
