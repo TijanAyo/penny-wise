@@ -65,11 +65,6 @@ export class AuthRepository {
         { password },
       );
 
-      /* const user = await User.findOneAndUpdate({
-        emailAddress: email,
-        password,
-      }); */
-
       if (!user) throw new badRequestException("Password could not be saved");
 
       return;
