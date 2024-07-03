@@ -25,12 +25,14 @@ import {
   hashPayload,
 } from "../utils";
 import { SendMails } from "../emails";
+import { EmailQueue } from "../queues";
 
 @injectable()
 export class AuthService {
   constructor(
     private readonly authRepository: AuthRepository,
     private readonly mailService: SendMails,
+    private readonly emailQueueService: EmailQueue,
   ) {}
 
   public async register(payload: registerPayload) {
@@ -124,12 +126,20 @@ export class AuthService {
 
       await this.authRepository.storeOTP(user.emailAddress, OTP);
 
+      await this.emailQueueService.sendEmailQueue({
+        type: "forgotPassword",
+        payload: {
+          email: user.emailAddress,
+          firstName: user.firstName,
+          otp: OTP,
+        },
+      });
       // TODO: queue sending mail to user
-      await this.mailService.forgotPasswordMail(
+      /*await this.mailService.forgotPasswordMail(
         user.emailAddress,
         user.firstName,
         OTP,
-      );
+      );*/
 
       return AppResponse(
         null,
