@@ -1,6 +1,8 @@
 import renderTemplate from "./render-template";
 import mailer from "../config/mailer";
+import { injectable } from "tsyringe";
 
+@injectable()
 export class SendMails {
   public async forgotPasswordMail(
     email: string,
