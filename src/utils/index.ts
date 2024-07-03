@@ -30,3 +30,10 @@ export const generateRandomOTP = async () => {
 export const cryptHash = async (data: string) => {
   return createHash("sha256").update(data).digest("hex");
 };
+
+export const generateVerificationURL = async (uid: string) => {
+  const payload = { uid };
+  return jwt.sign(payload, environment.JWT_SECRET, {
+    expiresIn: "30m",
+  });
+};

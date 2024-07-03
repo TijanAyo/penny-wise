@@ -12,5 +12,9 @@ router.post(
   "/reset-password",
   authController.resetPassword.bind(authController),
 );
+router.get(
+  "/verify-email/:token",
+  authController.verifyEmailAddress.bind(authController),
+);
 
 export { router as authRoute };

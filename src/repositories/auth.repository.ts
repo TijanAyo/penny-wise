@@ -33,6 +33,24 @@ export class AuthRepository {
     }
   }
 
+  async updateFieldInDB(email: string, key: string, value: any) {
+    try {
+      const update = await User.findOneAndUpdate(
+        { emailAddress: email },
+        { [key]: value },
+      );
+      if (!update)
+        throw new badRequestException(
+          "An error occurred while performing update",
+        );
+
+      return;
+    } catch (err: any) {
+      console.log(`Error updating field ${key} in DB`);
+      throw err;
+    }
+  }
+
   async createUser(
     email: string,
     firstName: string,

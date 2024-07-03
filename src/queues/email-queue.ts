@@ -42,6 +42,10 @@ export class EmailQueue {
         case "forgotPassword":
           await this.emailProcessor.forgotMailWorker(payload);
           break;
+
+        case "emailVerification":
+          await this.emailProcessor.emailVerificationWorker(payload);
+          break;
         default:
           throw new badRequestException("Unknown email job type");
       }

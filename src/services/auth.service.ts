@@ -22,9 +22,12 @@ import {
   compareHash,
   generateAccessToken,
   generateRandomOTP,
+  generateVerificationURL,
   hashPayload,
 } from "../utils";
 import { EmailQueue } from "../queues";
+import jwt, { TokenExpiredError } from "jsonwebtoken";
+import { environment } from "../config";
 
 @injectable()
 export class AuthService {
@@ -32,6 +35,8 @@ export class AuthService {
     private readonly authRepository: AuthRepository,
     private readonly emailQueueService: EmailQueue,
   ) {}
+
+  private readonly JWT_SECRET_KEY = environment.JWT_SECRET;
 
   public async register(payload: registerPayload) {
     try {
@@ -56,9 +61,17 @@ export class AuthService {
         hashPassword,
       );
 
-      // TODO: Send a verification mail to the user
+      const verificationString = await generateVerificationURL(email);
+      const verificationURL = `http://localhost:8970/api/auth/verify-email/${verificationString}`; // TODO: Make base-url dynamic in nature
+      await this.emailQueueService.sendEmailQueue({
+        type: "emailVerification",
+        payload: {
+          email,
+          verificationURL,
+        },
+      });
 
-      return AppResponse(null, "Account registeration successful", true);
+      return AppResponse(null, "Account registration successful", true);
     } catch (error: any) {
       if (error instanceof ZodError) {
         throw new validationException(error.message);
@@ -181,6 +194,44 @@ export class AuthService {
     } catch (error: any) {
       if (error instanceof ZodError) {
         throw new validationException(error.message);
+      }
+      throw error;
+    }
+  }
+
+  public async verifyEmailAddress(token: any) {
+    let decode: jwt.JwtPayload;
+    try {
+      decode = jwt.verify(token, this.JWT_SECRET_KEY) as jwt.JwtPayload;
+
+      const user = await this.authRepository.findByEmail(decode.uid);
+      if (!user) {
+        throw new badRequestException(
+          "Email already not associated with any user",
+        );
+      }
+      if (user.isEmailVerified) {
+        throw new badRequestException(
+          "Email address has already being verified initially",
+        );
+      }
+
+      await this.authRepository.updateFieldInDB(
+        user.emailAddress,
+        "isEmailVerified",
+        true,
+      );
+
+      return AppResponse(
+        `https://clientsideurl.place.here`, // TODO: Client side url for redirect
+        "Email address verified successfully",
+        true,
+      );
+    } catch (error: any) {
+      if (error instanceof TokenExpiredError) {
+        throw new badRequestException(
+          "Invalid token, verification URL has expired",
+        );
       }
       throw error;
     }

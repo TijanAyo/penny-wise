@@ -21,4 +21,20 @@ export class EmailProcessor {
       throw err;
     }
   }
+
+  async emailVerificationWorker(job: {
+    email: string;
+    verificationURL: string;
+  }) {
+    try {
+      const { email, verificationURL } = job;
+      await this.mailService.emailVerificationMail(email, verificationURL);
+    } catch (err: any) {
+      console.log(
+        "emailVerificationWorker: An error occurred processing job",
+        err,
+      );
+      throw err;
+    }
+  }
 }

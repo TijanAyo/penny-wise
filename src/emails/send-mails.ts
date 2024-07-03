@@ -17,4 +17,13 @@ export class SendMails {
 
     await mailer(email, emailSubject, emailBody);
   }
+
+  public async emailVerificationMail(email: string, verificationUrl: string) {
+    const emailSubject: string = "VERIFY YOUR EMAIL ADDRESS";
+    const emailBody = renderTemplate("email-verification", {
+      verification_link: verificationUrl,
+    });
+
+    await mailer(email, emailSubject, emailBody);
+  }
 }
