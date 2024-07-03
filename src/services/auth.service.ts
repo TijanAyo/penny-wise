@@ -160,21 +160,27 @@ export class AuthService {
           "Invalid credentials, email not associated with any user",
         );
       }
+
+      // Validate the OTP
+      await this.authRepository.validateOTP(email, otpCode);
+
+      if (newPassword !== confirmPassword) {
+        throw new badRequestException("Invalid input, password does not match");
+      }
+
+      await this.authRepository.markOTPHasValidated(email);
+
+      // Hash the password
+      const hashPassword = await hashPayload(confirmPassword);
+
+      await this.authRepository.updatePassword(email, hashPassword);
+
+      return AppResponse(null, "Password has been changed successfully", true);
     } catch (error: any) {
       if (error instanceof ZodError) {
         throw new validationException(error.message);
       }
       throw error;
     }
-    // check if the otp has not existed for more than 10 min
-    // if so Invaid OTP / OTP expired
-    // validate input
-    // create a validate otp middleware
-    // - This will check the input of the user with the otp value stored on redis
-    // - If this is successful
-    // - Hash new password and save to database
-    // -If not successful
-    // - Return an invalid OTP, check input and try again
-    // check the provided
   }
 }

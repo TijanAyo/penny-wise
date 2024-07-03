@@ -60,14 +60,19 @@ export class AuthRepository {
 
   async updatePassword(email: string, password: string) {
     try {
-      const user = await User.findOneAndUpdate({
+      const user = await User.findOneAndUpdate(
+        { emailAddress: email },
+        { password },
+      );
+
+      /* const user = await User.findOneAndUpdate({
         emailAddress: email,
         password,
-      });
+      }); */
 
       if (!user) throw new badRequestException("Password could not be saved");
 
-      return true;
+      return;
     } catch (err: any) {
       console.error("Error updating user password", err);
       throw err;
@@ -78,7 +83,7 @@ export class AuthRepository {
     try {
       const hashEmail = await cryptHash(email);
       let redisKey = `otp_validation:${hashEmail}`;
-      let otpExpiresIn = new Date(Date.now() + 15 * 60 * 1000); // 15 min
+      let otpExpiresIn = Date.now() + 15 * 60 * 1000; // 15 min
 
       // Store OTP and validation status in a hash
       await redisClient.HSET(redisKey, {
@@ -95,30 +100,76 @@ export class AuthRepository {
     }
   }
 
-  async validateOTP(email: string, otp_code: string) {
+  private async retrieveOTP(email: string) {
     try {
       const hashEmail = await cryptHash(email);
       let redisKey = `otp_validation:${hashEmail}`;
 
-      const [otpCode, isValidated, otpExpiresIn] = await Promise.all([
-        redisClient.HGET(redisKey, "otpCode"),
+      const [otp, isValidated, otpExpiresIn] = await Promise.all([
+        redisClient.HGET(redisKey, "otp"),
         redisClient.HGET(redisKey, "isValidated"),
         redisClient.HGET(redisKey, "otpExpiresIn"),
       ]);
 
-      console.log(otpCode, isValidated, otpExpiresIn);
+      console.log(otp, isValidated, otpExpiresIn);
 
-      // check if the code has not expired
-      // - return OTP code has expired
-      // check if the code matches
-      // - Invalid OTP Code
+      return {
+        otpCode: otp ?? null,
+        isValidated: isValidated ?? null,
+        otpExpiresIn: otpExpiresIn ?? null,
+      };
+    } catch (err: any) {
+      console.error("Error retrieving otp values from redis database", err);
+      throw err;
+    }
+  }
 
-      // check if this code has been used isValidated is true
-      // - Invalida OTP code, code has been utilized
+  async validateOTP(email: string, providedOTP: string) {
+    try {
+      const otpDetails = await this.retrieveOTP(email);
 
-      // return true
+      if (!otpDetails.otpCode) {
+        throw new badRequestException("OTP not found");
+      }
+      const currentTime = Date.now();
+      const otpExpiresIn = parseInt(otpDetails.otpExpiresIn, 10);
+
+      if (otpDetails.isValidated === "true") {
+        throw new badRequestException(
+          "Invalid OTP code, code has been utilized",
+        );
+      }
+
+      if (currentTime > otpExpiresIn) {
+        throw new badRequestException("OTP code has expired");
+      }
+
+      if (otpDetails.otpCode !== providedOTP) {
+        throw new badRequestException("Invalid OTP code");
+      }
+
+      return true;
     } catch (err: any) {
       console.error("Error validating otp in redis database", err);
+      throw err;
+    }
+  }
+
+  async markOTPHasValidated(email: string) {
+    try {
+      const hashEmail = await cryptHash(email);
+      let redisKey = `otp_validation:${hashEmail}`;
+      const updateField = await redisClient.HSET(redisKey, {
+        isValidated: "true",
+      });
+
+      if (updateField !== 0) {
+        throw new badRequestException("OTP could not be marked has validated");
+      }
+
+      return;
+    } catch (err: any) {
+      console.error("Error marking otp has valid");
       throw err;
     }
   }

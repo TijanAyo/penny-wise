@@ -36,4 +36,13 @@ export class AuthController {
       return await this.errorHandler.handleCustomError(error, res);
     }
   }
+
+  public async resetPassword(req: Request, res: Response) {
+    try {
+      const result = await this.authService.resetPassword(req.body);
+      return res.status(200).json(result);
+    } catch (error: any) {
+      return await this.errorHandler.handleCustomError(error, res);
+    }
+  }
 }
