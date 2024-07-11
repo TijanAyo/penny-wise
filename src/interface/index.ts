@@ -74,6 +74,7 @@ export interface resetPasswordPayload {
 export interface Iwallet extends Document {
   _id: Types.ObjectId;
   account_number: string;
+  account_bank: string;
   balance: number;
   user: Iuser;
   transactions: Itransaction;
@@ -104,4 +105,29 @@ export interface Itransaction extends Document {
   status: TransactionStatus;
   description: string;
   wallet: Iwallet;
+}
+
+export interface createVirtualAccountNumberPayload {
+  bvn: string;
+}
+
+export interface VirtualAccountResponse {
+  status: string;
+  message: string;
+  data: VirtualAccountData;
+}
+
+export interface VirtualAccountData {
+  response_code: string;
+  response_message: string;
+  flw_ref: string;
+  order_ref: string;
+  account_number: string;
+  account_status: string;
+  frequency: number;
+  bank_name: string;
+  created_at: number;
+  expiry_date: string;
+  note: string;
+  amount: string;
 }
