@@ -43,6 +43,7 @@ export interface Iuser extends Document {
   pinSetAt: Date;
   address: Address;
   nextOfKin: NextOfKin;
+  wallet: Iwallet;
 }
 
 export interface registerPayload {
@@ -68,4 +69,39 @@ export interface resetPasswordPayload {
   otpCode: string;
   newPassword: string;
   confirmPassword: string;
+}
+
+export interface Iwallet extends Document {
+  _id: Types.ObjectId;
+  account_number: string;
+  balance: number;
+  user: Iuser;
+  transactions: Itransaction;
+}
+
+export enum TransactionType {
+  DISBURSE = "disburse",
+  FUNDING = "funding",
+  P2P = "p2p",
+}
+
+export enum TransactionStatus {
+  FAILED = "Failed",
+  SUCCESSFUL = "Successful",
+}
+
+export interface Itransaction extends Document {
+  _id: Types.ObjectId;
+  from: string;
+  recipient_name: string;
+  recipient_account_number: string;
+  recipient_bank: string;
+  date: string;
+  amount_credited: string;
+  amount_debited: string;
+  reference: string;
+  type: TransactionType;
+  status: TransactionStatus;
+  description: string;
+  wallet: Iwallet;
 }

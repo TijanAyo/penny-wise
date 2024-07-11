@@ -45,6 +45,10 @@ const userSchema: Schema<Iuser> = new Schema<Iuser>({
     country: { type: String, trim: true },
     state: { type: String, trim: true },
   },
+  wallet: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Wallet",
+  },
 });
 
 const User = mongoose.model<Iuser>("User", userSchema);
