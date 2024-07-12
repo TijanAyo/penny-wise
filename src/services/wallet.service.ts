@@ -109,7 +109,27 @@ export class WalletService {
     }
   }
 
-  public async getVirtualAccountDetails() {}
+  public async getVirtualAccountDetails(userId: Types.ObjectId) {
+    try {
+      const user = await this._userRepository.findByUserId(userId);
+      if (!user) {
+        console.log("getVirtualAccountDetailsError: User not found");
+        throw new badRequestException("User not found");
+      }
+
+      const walletInfo = await this._walletRepository.getWalletInfo(userId);
+      if (!walletInfo) {
+        throw new badRequestException("Wallet information not found");
+      }
+      return AppResponse(
+        walletInfo,
+        "Wallet information retrieved successfully",
+        true,
+      );
+    } catch (error: any) {
+      throw error;
+    }
+  }
 
   public async disburse() {}
 

@@ -12,4 +12,10 @@ router.post(
   walletController.createVirtualAccount.bind(walletController),
 );
 
+router.get(
+  "/info",
+  AuthMiddleWare,
+  walletController.getWalletInfo.bind(walletController),
+);
+
 export { router as walletRoute };
