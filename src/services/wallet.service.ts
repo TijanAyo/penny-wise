@@ -6,10 +6,15 @@ import {
 import { createVirtualAccountNumberSchema } from "../validations";
 import { Types } from "mongoose";
 import { UserRepository, WalletRepository } from "../repositories";
-import { AppResponse, badRequestException } from "../helpers";
+import {
+  AppResponse,
+  badRequestException,
+  validationException,
+} from "../helpers";
 import axios from "axios";
 import { environment } from "../config";
 import { hashPayload } from "../utils";
+import { ZodError } from "zod";
 
 @injectable()
 export class WalletService {
@@ -97,6 +102,9 @@ export class WalletService {
 
       return AppResponse(result, "Virtual account created", true);
     } catch (error: any) {
+      if (error instanceof ZodError) {
+        throw new validationException(error.message);
+      }
       throw error;
     }
   }

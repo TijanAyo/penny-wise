@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { injectable } from "tsyringe";
 import { ErrorHandler } from "../helpers/error-handler";
 import { WalletService } from "../services";
-import mongoose, { Types } from "mongoose";
 
 @injectable()
 export class WalletController {
@@ -13,9 +12,9 @@ export class WalletController {
 
   public async createVirtualAccount(req: Request, res: Response) {
     try {
-      const userId = new mongoose.Types.ObjectId("66904d23a9549389ebe5a1dd");
+      const { _id } = req.user;
       const result = await this._walletService.createVirtualAccountNumber(
-        userId,
+        _id,
         req.body,
       );
       return res.status(200).json(result);
