@@ -43,4 +43,28 @@ export class WalletRepository {
       throw err;
     }
   }
+
+  async incrementBalance(userId: Types.ObjectId, amount: number) {
+    try {
+      return await Wallet.findOneAndUpdate(
+        { user: userId },
+        { $inc: { balance: amount } },
+      );
+    } catch (err: any) {
+      console.error("Error increasing wallet balance:", err);
+      throw err;
+    }
+  }
+
+  async decreaseBalance(userId: Types.ObjectId, amount: number) {
+    try {
+      return await Wallet.findOneAndUpdate(
+        { user: userId },
+        { $inc: { balance: -amount } },
+      );
+    } catch (err: any) {
+      console.error("Error increasing wallet balance:", err);
+      throw err;
+    }
+  }
 }

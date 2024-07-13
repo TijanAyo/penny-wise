@@ -131,7 +131,10 @@ export class WalletService {
     }
   }
 
-  public async disburse() {}
+  public async disburse() {
+    // Check if the user balance is able to make such transaction
+    // the receiver bank and account number
+  }
 
   public async p2pTransfer() {}
 

@@ -16,6 +16,7 @@ const environmentSchema = z.object({
   REDIS_HOST: z.string(),
   REDIS_PORT: z.string(),
   FLUTTERWAVE_SECRET_KEY: z.string(),
+  FLUTTERWAVE_SECRET_HASH: z.string(),
 });
 
 export const environment = environmentSchema.parse(process.env);

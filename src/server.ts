@@ -7,7 +7,7 @@ import morgan from "morgan";
 import cors from "cors";
 
 import { connectDB, isLocal, allowedOrigins, environment } from "./config";
-import { authRoute, walletRoute } from "./routes";
+import { authRoute, walletRoute, webHookRoute } from "./routes";
 
 const app: Express = express();
 const PORT = Number(environment.PORT) || 3333;
@@ -26,6 +26,7 @@ app.use(express.urlencoded({ extended: false }));
 // Define Routes
 app.use("/api/auth", authRoute);
 app.use("/api/wallet", walletRoute);
+app.use("/api/webhook", webHookRoute);
 
 app.get("/", (_req: Request, res: Response) => {
   return res
