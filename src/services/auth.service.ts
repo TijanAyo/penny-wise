@@ -2,7 +2,7 @@ import { injectable } from "tsyringe";
 import {
   AppResponse,
   badRequestException,
-  base_url,
+  URL,
   validationException,
 } from "../helpers";
 import { UserRepository } from "../repositories";
@@ -63,7 +63,7 @@ export class AuthService {
       );
 
       const verificationString = await generateVerificationURL(email);
-      const verificationURL = `${base_url}/api/auth/verify-email/${verificationString}`;
+      const verificationURL = `${URL}/api/auth/verify-email/${verificationString}`;
       await this._emailQueueService.sendEmailQueue({
         type: "emailVerification",
         payload: {

@@ -4,7 +4,7 @@ import { Iuser } from "../interface";
 const userSchema: Schema<Iuser> = new Schema<Iuser>({
   firstName: { type: String, trim: true },
   lastName: { type: String, trim: true },
-  username: { type: String, trim: true, unique: true },
+  username: { type: String, trim: true },
   emailAddress: {
     type: String,
     trim: true,
