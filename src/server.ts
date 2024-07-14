@@ -10,7 +10,7 @@ import { connectDB, isLocal, allowedOrigins, environment } from "./config";
 import { authRoute, walletRoute, webHookRoute } from "./routes";
 
 const app: Express = express();
-const PORT = Number(environment.PORT) || 3333;
+const PORT = Number(environment.PORT) || 5050;
 
 // Middleware
 app.use(

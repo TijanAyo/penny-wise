@@ -7,6 +7,7 @@ const environmentSchema = z.object({
   MONGO_URI: z.string(),
   LOCAL_MONGO_URI: z.string(),
   PORT: z.string(),
+  BASE_URL: z.string(),
   SALT_ROUND: z.string(),
   JWT_SECRET: z.string(),
   JWT_EXPIRES_IN: z.string(),
