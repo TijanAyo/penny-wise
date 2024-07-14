@@ -5,4 +5,4 @@ const NODE_ENV = environment.NODE_ENV;
 const PORT = environment.PORT;
 const LOCAL_URL = `http://localhost:${PORT}`;
 
-export const URL = NODE_ENV == "local" ? BASE_URL : LOCAL_URL;
+export const URL = NODE_ENV !== "local" ? BASE_URL : LOCAL_URL;
