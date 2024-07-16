@@ -78,7 +78,7 @@ export class WebHookService {
         transaction._id,
       );
 
-      res.status(200).send("Transaction successfully processed");
+      console.log("Transaction successfully processed");
     } catch (error: any) {
       console.error("chargeSuccessEventError:", error);
       res.status(500).send("Internal server error");
