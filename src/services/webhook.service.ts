@@ -39,6 +39,7 @@ export class WebHookService {
     if (!user) {
       console.log("chargeSuccessEventError: User not found");
       res.status(401).send("User not found").end();
+      return;
     }
 
     const updateWallet = await this._walletRepository.incrementBalance(
@@ -48,6 +49,7 @@ export class WebHookService {
     if (!updateWallet) {
       console.log("An error occurred while updating wallet");
       res.status(401).send("Balance could not be updated").end();
+      return;
     }
 
     const transactionData = {
@@ -69,12 +71,15 @@ export class WebHookService {
     if (!transaction) {
       console.log("An issue occured while trying to create transaction");
       res.status(401).send("Transaction could not be updated").end();
+      return;
     }
 
     // Update wallet transactions
     await this._walletRepository.updateTransactionsInWallet(_id, {
       transactions: transaction._id,
     });
+
+    res.status(200).send("Transaction successfully processed");
   }
 
   private async verifyTransactionEvent(payloadId: number, res: Response) {
