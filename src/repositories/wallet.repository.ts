@@ -78,13 +78,13 @@ export class WalletRepository {
   }
 
   async updateTransactionsInWallet(
-    id: Types.ObjectId,
-    updateData: Record<string, any>,
+    userId: Types.ObjectId,
+    transactionId: Types.ObjectId,
   ) {
     try {
       const update = await Wallet.findOneAndUpdate(
-        { user: id },
-        { $push: updateData },
+        { user: userId },
+        { $push: { transactions: transactionId } },
       );
       if (!update)
         throw new badRequestException(
@@ -93,7 +93,7 @@ export class WalletRepository {
 
       return;
     } catch (err: any) {
-      console.log(`Error updating field in DB`);
+      console.log(`WalletRepo: Error updating field in DB`);
       throw err;
     }
   }

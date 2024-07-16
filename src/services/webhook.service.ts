@@ -75,9 +75,10 @@ export class WebHookService {
     }
 
     // Update wallet transactions
-    await this._walletRepository.updateTransactionsInWallet(_id, {
-      transactions: transaction._id,
-    });
+    await this._walletRepository.updateTransactionsInWallet(
+      _id,
+      transaction._id,
+    );
 
     res.status(200).send("Transaction successfully processed");
   }
