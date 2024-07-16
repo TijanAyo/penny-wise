@@ -44,6 +44,15 @@ export class WalletRepository {
     }
   }
 
+  async getWalletTransactions(userId: Types.ObjectId) {
+    try {
+      return await Wallet.findOne({ user: userId }).populate("transactions");
+    } catch (err: any) {
+      console.error("Error getting user wallet info:", err);
+      throw err;
+    }
+  }
+
   async incrementBalance(userId: Types.ObjectId, amount: number) {
     try {
       return await Wallet.findOneAndUpdate(
@@ -64,6 +73,24 @@ export class WalletRepository {
       );
     } catch (err: any) {
       console.error("Error increasing wallet balance:", err);
+      throw err;
+    }
+  }
+
+  async updateFieldInDB(id: Types.ObjectId, updateData: Record<string, any>) {
+    try {
+      const update = await Wallet.findOneAndUpdate(
+        { user: id },
+        { $set: updateData },
+      );
+      if (!update)
+        throw new badRequestException(
+          "An error occurred while performing update",
+        );
+
+      return;
+    } catch (err: any) {
+      console.log(`Error updating field in DB`);
       throw err;
     }
   }

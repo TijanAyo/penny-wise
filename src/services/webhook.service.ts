@@ -51,12 +51,14 @@ export class WebHookService {
     }
 
     const transactionData = {
+      from: `Virtual account transfer`,
       recipient_name: data.data.meta.originatorname as string,
       recipient_bank: data.data.meta.bankname as string,
       amount_credited: String(payloadAmount),
       type: TransactionType.FUNDING,
       status: TransactionStatus.SUCCESSFUL,
       reference: generateTransactionReference(),
+      description: `Transfer to wallet from bank account ${data.data.meta.originatoraccountnumber} - ${data.data.meta.originatorname}`,
     };
     const { _id } = await this._walletRepository.getWalletInfo(user._id);
 
@@ -68,6 +70,11 @@ export class WebHookService {
       console.log("An issue occured while trying to create transaction");
       res.status(401).send("Transaction could not be updated").end();
     }
+
+    // Update wallet transactions
+    await this._walletRepository.updateFieldInDB(_id, {
+      transactions: transaction._id,
+    });
   }
 
   private async verifyTransactionEvent(payloadId: number, res: Response) {

@@ -26,8 +26,20 @@ export class TransactionService {
     }
   }
 
-  public async viewAllTransaction(userId: string) {
-    // Implementation for getting all transactions that belongs to the user
+  public async viewAllTransaction(userId: Types.ObjectId) {
+    try {
+      const transactions =
+        await this._transactionRepository.getTransactions(userId);
+      if (!transactions) {
+        throw new badRequestException(
+          "An error occurred while fetching transactions",
+        );
+      }
+      return transactions;
+    } catch (error: any) {
+      console.error("viewAllTransactionErr", error);
+      throw error;
+    }
   }
 
   public async getTransactionDetails(transactionId: string) {

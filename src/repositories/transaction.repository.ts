@@ -4,10 +4,14 @@ import { transactionData } from "../interface";
 import { formatDate } from "../utils";
 import { badRequestException } from "../helpers";
 import { Types } from "mongoose";
+import { WalletRepository } from "../repositories";
 
 @injectable()
 export class TransactionRepository {
+  constructor(private readonly _walletRepository: WalletRepository) {}
+
   private readonly NOW = new Date();
+
   public async createTransaction(
     transactionData: transactionData,
     walletId: Types.ObjectId,
@@ -28,6 +32,15 @@ export class TransactionRepository {
       });
     } catch (err: any) {
       console.error("Error creating transaction:", err);
+      throw err;
+    }
+  }
+
+  public async getTransactions(userId: Types.ObjectId) {
+    try {
+      return await this._walletRepository.getWalletTransactions(userId);
+    } catch (err: any) {
+      console.error("Error getting transactions:", err);
       throw err;
     }
   }

@@ -7,7 +7,13 @@ import morgan from "morgan";
 import cors from "cors";
 
 import { connectDB, isLocal, allowedOrigins, environment } from "./config";
-import { authRoute, walletRoute, webHookRoute, accountRoute } from "./routes";
+import {
+  authRoute,
+  walletRoute,
+  webHookRoute,
+  accountRoute,
+  transactionRoute,
+} from "./routes";
 
 const app: Express = express();
 const PORT = Number(environment.PORT) || 5050;
@@ -28,6 +34,7 @@ app.use("/api/auth", authRoute);
 app.use("/api/wallet", walletRoute);
 app.use("/api/webhook", webHookRoute);
 app.use("/api/account", accountRoute);
+app.use("/api/transaction", transactionRoute);
 
 app.get("/", (_req: Request, res: Response) => {
   return res
