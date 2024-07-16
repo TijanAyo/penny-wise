@@ -3,12 +3,16 @@ import { environment } from "../config";
 import { Request, Response } from "express";
 import axios from "axios";
 import { WalletRepository, UserRepository } from "../repositories";
+import { TransactionService } from "./transaction.service";
+import { TransactionStatus, TransactionType } from "../interface";
+import { generateTransactionReference } from "../utils";
 
 @injectable()
 export class WebHookService {
   constructor(
     private readonly _userRepository: UserRepository,
     private readonly _walletRepository: WalletRepository,
+    private readonly _transactionService: TransactionService,
   ) {}
 
   private readonly FLUTTERWAVE_BASE_URL = `https://api.flutterwave.com/v3`;
@@ -29,7 +33,7 @@ export class WebHookService {
     payloadAmount: number,
     res: Response,
   ) {
-    await this.verifyTransactionEvent(payloadId, res);
+    const { data } = await this.verifyTransactionEvent(payloadId, res);
 
     const user = await this._userRepository.findByEmail(customerMail);
     if (!user) {
@@ -46,11 +50,30 @@ export class WebHookService {
       res.status(401).send("Balance could not be updated").end();
     }
 
+    const transactionData = {
+      recipient_name: data.meta.originatorname as string,
+      recipient_bank: data.meta.bankname as string,
+      amount_credited: String(payloadAmount),
+      type: TransactionType.FUNDING,
+      status: TransactionStatus.SUCCESSFUL,
+      reference: generateTransactionReference(),
+    };
+    const { _id } = await this._walletRepository.getWalletInfo(user._id);
+
+    const transaction = await this._transactionService.createTransaction(
+      transactionData,
+      _id,
+    );
+    if (!transaction) {
+      console.log("An issue occured while trying to create transaction");
+      res.status(401).send("Transaction could not be updated").end();
+    }
+
     // Call the verifyTransactionEvent method to verify the transaction  -- done
     // Update the wallet balance with the transfered amount -- done
     // find the user whose wallet email matches the customer info --- done
     // use the incr method to increase the balance --- done
-    // call the create transaction service
+    // call the create transaction service --- done
   }
 
   private async verifyTransactionEvent(payloadId: number, res: Response) {
@@ -58,13 +81,13 @@ export class WebHookService {
       `transactions/${payloadId}/verify`,
     );
 
-    console.log(response.data);
+    console.log("Verification data ==>", response.data);
 
     if (response.data.status !== "successful") {
       res.status(401).send("Transaction could not be verified").end();
     }
 
-    return;
+    return { data: response.data };
   }
 
   public async handleFlwWebhookEvents(req: Request, res: Response) {

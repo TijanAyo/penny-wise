@@ -1,22 +1,30 @@
-import { Types } from "mongoose";
 import { injectable } from "tsyringe";
-
-interface transactionData {
-  from?: string;
-  recipient_name: string;
-  recipient_bank: string;
-  date: string;
-  amount_credited?: string;
-  amount_debited?: string;
-  type: string;
-  status: string;
-  description: string;
-  wallet: Types.ObjectId;
-}
+import { transactionData } from "../interface";
+import { TransactionRepository } from "../repositories";
+import { Types } from "mongoose";
+import { badRequestException } from "../helpers";
 
 @injectable()
 export class TransactionService {
-  public async createTransaction(payload: transactionData) {}
+  constructor(private readonly _transactionRepository: TransactionRepository) {}
+
+  public async createTransaction(
+    payload: transactionData,
+    walletId: Types.ObjectId,
+  ) {
+    try {
+      const newTransaction =
+        await this._transactionRepository.createTransaction(payload, walletId);
+      if (!newTransaction)
+        throw new badRequestException(
+          "An error occurred while updating transaction",
+        );
+      return newTransaction;
+    } catch (error: any) {
+      console.error("createTransactionErr", error);
+      throw error;
+    }
+  }
 
   public async viewAllTransaction(userId: string) {
     // Implementation for getting all transactions that belongs to the user

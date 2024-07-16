@@ -131,3 +131,15 @@ export interface VirtualAccountData {
   note: string;
   amount: string;
 }
+
+export interface transactionData {
+  from?: string;
+  recipient_name: string;
+  recipient_bank: string;
+  amount_credited?: string;
+  amount_debited?: string;
+  type: TransactionType;
+  status: TransactionStatus;
+  description?: string;
+  reference: string;
+}
