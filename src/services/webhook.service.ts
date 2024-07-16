@@ -77,6 +77,8 @@ export class WebHookService {
     res.status(200);
     const payload = req.body;
 
+    console.log("payload==>", payload);
+
     if (payload.event == "charge.completed") {
       await this.chargeSuccessEvent(
         payload.data.id,
