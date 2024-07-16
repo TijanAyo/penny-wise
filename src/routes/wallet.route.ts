@@ -6,12 +6,6 @@ import { container } from "tsyringe";
 const router: Router = express.Router();
 const walletController = container.resolve(WalletController);
 
-router.post(
-  "/new/virtual-account",
-  AuthMiddleWare,
-  walletController.createVirtualAccount.bind(walletController),
-);
-
 router.get(
   "/info",
   AuthMiddleWare,
