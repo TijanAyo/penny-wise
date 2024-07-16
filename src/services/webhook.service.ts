@@ -72,7 +72,7 @@ export class WebHookService {
     }
 
     // Update wallet transactions
-    await this._walletRepository.updateFieldInDB(_id, {
+    await this._walletRepository.updateTransactionsInWallet(_id, {
       transactions: transaction._id,
     });
   }

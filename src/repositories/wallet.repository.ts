@@ -77,15 +77,18 @@ export class WalletRepository {
     }
   }
 
-  async updateFieldInDB(id: Types.ObjectId, updateData: Record<string, any>) {
+  async updateTransactionsInWallet(
+    id: Types.ObjectId,
+    updateData: Record<string, any>,
+  ) {
     try {
       const update = await Wallet.findOneAndUpdate(
         { user: id },
-        { $set: updateData },
+        { $push: updateData },
       );
       if (!update)
         throw new badRequestException(
-          "An error occurred while performing update",
+          "WalletRepo: An error occurred while performing update",
         );
 
       return;
