@@ -51,8 +51,8 @@ export class WebHookService {
     }
 
     const transactionData = {
-      recipient_name: data.meta.originatorname as string,
-      recipient_bank: data.meta.bankname as string,
+      recipient_name: data.data.meta.originatorname as string,
+      recipient_bank: data.data.meta.bankname as string,
       amount_credited: String(payloadAmount),
       type: TransactionType.FUNDING,
       status: TransactionStatus.SUCCESSFUL,
@@ -68,12 +68,6 @@ export class WebHookService {
       console.log("An issue occured while trying to create transaction");
       res.status(401).send("Transaction could not be updated").end();
     }
-
-    // Call the verifyTransactionEvent method to verify the transaction  -- done
-    // Update the wallet balance with the transfered amount -- done
-    // find the user whose wallet email matches the customer info --- done
-    // use the incr method to increase the balance --- done
-    // call the create transaction service --- done
   }
 
   private async verifyTransactionEvent(payloadId: number, res: Response) {
