@@ -101,10 +101,12 @@ export class WebHookService {
       logger.info("got here 7");
 
       try {
+        logger.info("Got here 8");
         await this._walletRepository.updateTransactionsInWallet(
           _id,
           transaction._id,
         );
+        logger.info("Transaction successfully added to wallet");
       } catch (error: any) {
         throw new badRequestException(
           "Wallet could not be updated with transaction",
