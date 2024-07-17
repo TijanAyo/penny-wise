@@ -36,7 +36,7 @@ export class WebHookService {
 
       console.log("Verification data ==>", response.data);
 
-      if (response.data.status !== "successful") {
+      if (response.data.status !== "success") {
         throw new badRequestException("Transaction could not be verified");
 
         // res.status(401).send("Transaction could not be verified").end();
