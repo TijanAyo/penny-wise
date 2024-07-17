@@ -85,7 +85,7 @@ export class WalletRepository {
       logger.info(
         `Updating wallet for user: ${userId} with transaction: ${transactionId}`,
       );
-      return await Wallet.findOneAndUpdate(
+      return await Wallet.updateOne(
         { user: userId },
         { $push: { transactions: transactionId } },
       );
