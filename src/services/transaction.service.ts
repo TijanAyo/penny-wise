@@ -2,7 +2,7 @@ import { injectable } from "tsyringe";
 import { transactionData } from "../interface";
 import { TransactionRepository } from "../repositories";
 import { Types } from "mongoose";
-import { badRequestException } from "../helpers";
+import { AppResponse, badRequestException } from "../helpers";
 
 @injectable()
 export class TransactionService {
@@ -35,7 +35,11 @@ export class TransactionService {
           "An error occurred while fetching transactions",
         );
       }
-      return transactions;
+      return AppResponse(
+        transactions,
+        "Transactions fetched successfully",
+        true,
+      );
     } catch (error: any) {
       console.error("viewAllTransactionErr", error);
       throw error;

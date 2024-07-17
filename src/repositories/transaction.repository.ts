@@ -37,10 +37,16 @@ export class TransactionRepository {
 
   public async getTransactions(userId: Types.ObjectId) {
     try {
-      return await this._walletRepository.getWalletTransactions(userId);
+      const { _id } = await this._walletRepository.getWalletInfo(userId);
+
+      return await Transaction.find({ wallet: _id });
     } catch (err: any) {
       console.error("Error getting transactions:", err);
       throw err;
     }
+  }
+
+  public async getWalletTransactions() {
+    // get
   }
 }

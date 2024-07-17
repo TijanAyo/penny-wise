@@ -44,15 +44,6 @@ export class WalletRepository {
     }
   }
 
-  async getWalletTransactions(userId: Types.ObjectId) {
-    try {
-      return await Wallet.findOne({ user: userId }).populate("transactions");
-    } catch (err: any) {
-      console.error("Error getting user wallet info:", err);
-      throw err;
-    }
-  }
-
   async incrementBalance(userId: Types.ObjectId, amount: number) {
     try {
       return await Wallet.findOneAndUpdate(
