@@ -85,16 +85,10 @@ export class WalletRepository {
       logger.info(
         `Updating wallet for user: ${userId} with transaction: ${transactionId}`,
       );
-      const update = await Wallet.findOneAndUpdate(
+      return await Wallet.findOneAndUpdate(
         { user: userId },
         { $push: { transactions: transactionId } },
       );
-      if (!update)
-        throw new badRequestException(
-          "WalletRepo: An error occurred while performing update",
-        );
-
-      return;
     } catch (err: any) {
       console.log(`WalletRepo: Error updating field in DB`);
       throw err;

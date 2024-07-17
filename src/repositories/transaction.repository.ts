@@ -2,7 +2,6 @@ import { injectable } from "tsyringe";
 import Transaction from "../models/transaction.model";
 import { transactionData } from "../interface";
 import { formatDate } from "../utils";
-import { badRequestException } from "../helpers";
 import { Types } from "mongoose";
 import { WalletRepository } from "../repositories";
 

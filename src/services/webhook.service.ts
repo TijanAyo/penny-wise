@@ -100,11 +100,16 @@ export class WebHookService {
       }
       logger.info("got here 7");
 
-      // Update wallet transactions
-      await this._walletRepository.updateTransactionsInWallet(
-        _id,
-        transaction._id,
-      );
+      try {
+        await this._walletRepository.updateTransactionsInWallet(
+          _id,
+          transaction._id,
+        );
+      } catch (error: any) {
+        throw new badRequestException(
+          "Wallet could not be updated with transaction",
+        );
+      }
 
       logger.info("Transaction successfully processed");
     } catch (error: any) {
