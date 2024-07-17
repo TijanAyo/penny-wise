@@ -6,7 +6,7 @@ import { WalletRepository, UserRepository } from "../repositories";
 import { TransactionService } from "./transaction.service";
 import { TransactionStatus, TransactionType } from "../interface";
 import { generateTransactionReference } from "../utils";
-import { logger } from "../helpers";
+import { AppResponse, badRequestException, logger } from "../helpers";
 
 @injectable()
 export class WebHookService {
@@ -37,7 +37,9 @@ export class WebHookService {
       console.log("Verification data ==>", response.data);
 
       if (response.data.status !== "successful") {
-        res.status(401).send("Transaction could not be verified").end();
+        throw new badRequestException("Transaction could not be verified");
+
+        // res.status(401).send("Transaction could not be verified").end();
       }
 
       logger.info("Got here 1");
@@ -61,7 +63,8 @@ export class WebHookService {
       const user = await this._userRepository.findByEmail(customerMail);
       if (!user) {
         console.log("chargeSuccessEventError: User not found");
-        res.status(401).send("User not found").end();
+        throw new badRequestException("User not found");
+        // res.status(401).send("User not found").end();
       }
 
       logger.info("got here 3");
@@ -71,7 +74,13 @@ export class WebHookService {
       );
       if (!updateWallet) {
         logger.error("An error occurred while updating wallet");
-        res.status(401).send("Balance could not be updated").end();
+        throw new badRequestException("Balance could not be updated");
+        /* return {
+          data: null,
+          message: "Balance could not be updated",
+          success: false,
+        }; */
+        // res.status(401).send("Balance could not be updated").end();
       }
 
       logger.info("got here 4");
@@ -95,7 +104,13 @@ export class WebHookService {
       );
       if (!transaction) {
         console.log("An issue occured while trying to create transaction");
-        res.status(401).send("Transaction could not be updated").end();
+        throw new badRequestException("Transaction could not be updated");
+        /* return {
+          data: null,
+          message: "Transaction could not be updated",
+          success: false,
+        }; */
+        // res.status(401).send("Transaction could not be updated").end();
       }
       logger.info("got here 7");
 
@@ -108,7 +123,9 @@ export class WebHookService {
       logger.info("Transaction successfully processed");
     } catch (error: any) {
       logger.error(`chargeSuccessEventError: ${error}`);
-      res.status(500).send("Internal server error");
+      throw error;
+      // return { data: null, message: "Internal server error", success: false };
+      // res.status(500).send("Internal server error");
     }
   }
 
