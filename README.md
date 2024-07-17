@@ -6,9 +6,7 @@ Pennywise is a simple savings application inspired by my first saving platform, 
 
 ## Features
 
-- Easy to use savings API's
-- Secure and reliable
-- Inspired by proven savings models
+- More info coming soon
 
 ## Installation
 
@@ -34,12 +32,7 @@ Follow these steps to set up the project locally:
 
 4. **Set up environment variables**
 
-   Create a .env file in the root directory and add your environment variables. Make use of `.env.example for reference:
-
-   ```bash
-   DATABASE_URL=your_database_url
-   JWT_SECRET=your_jwt_secret
-   ```
+   Create a .env file in the root directory and add your environment variables. Make use of `.env.example for reference
 
 5. **Run the application**
 
