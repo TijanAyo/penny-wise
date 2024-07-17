@@ -1,7 +1,7 @@
 import { injectable } from "tsyringe";
 import { Types } from "mongoose";
 import Wallet from "../models/wallet.model";
-import { badRequestException } from "../helpers";
+import { badRequestException, logger } from "../helpers";
 
 @injectable()
 export class WalletRepository {
@@ -82,6 +82,9 @@ export class WalletRepository {
     transactionId: Types.ObjectId,
   ) {
     try {
+      logger.info(
+        `Updating wallet for user: ${userId} with transaction: ${transactionId}`,
+      );
       const update = await Wallet.findOneAndUpdate(
         { user: userId },
         { $push: { transactions: transactionId } },
