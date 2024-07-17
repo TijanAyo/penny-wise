@@ -1,7 +1,7 @@
 import { injectable } from "tsyringe";
-import { transactionData } from "../interface";
+import { Itransaction, transactionData } from "../interface";
 import { TransactionRepository } from "../repositories";
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { AppResponse, badRequestException } from "../helpers";
 
 @injectable()
@@ -35,18 +35,44 @@ export class TransactionService {
           "An error occurred while fetching transactions",
         );
       }
-      return AppResponse(
-        transactions,
-        "Transactions fetched successfully",
-        true,
-      );
+
+      const data = transactions.map((transaction: Itransaction) => ({
+        id: transaction._id,
+        amount:
+          transaction.amount_credited !== undefined
+            ? `+${transaction.amount_credited}`
+            : ` -${transaction.amount_debited}`,
+        time: transaction.date,
+        status: transaction.status,
+        type: transaction.type,
+      }));
+
+      return AppResponse(data, "Transactions fetched successfully", true);
     } catch (error: any) {
       console.error("viewAllTransactionErr", error);
       throw error;
     }
   }
 
-  public async getTransactionDetails(transactionId: string) {
-    // Implementation for getting details of a specific transaction
+  public async viewTransactionDetails(transactionId: string) {
+    try {
+      const transaction = await this._transactionRepository.getTransactionInfo(
+        new mongoose.Types.ObjectId(transactionId),
+      );
+      if (!transaction) {
+        console.log("TransactionId could not be found");
+        throw new badRequestException(
+          "An error occurred while fetching transaction infomation",
+        );
+      }
+      return AppResponse(
+        transaction,
+        "Transaction details fetched successfully",
+        true,
+      );
+    } catch (error: any) {
+      console.error("getTransactionDetailsErr", error);
+      throw error;
+    }
   }
 }

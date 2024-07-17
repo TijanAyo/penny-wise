@@ -19,4 +19,15 @@ export class TransactionController {
       return await this._errorHandler.handleCustomError(error, res);
     }
   }
+
+  public async getTransactionInfo(req: Request, res: Response) {
+    try {
+      const { transactionId } = req.params;
+      const result =
+        await this._transactionService.viewTransactionDetails(transactionId);
+      return res.status(200).json(result);
+    } catch (error: any) {
+      return await this._errorHandler.handleCustomError(error, res);
+    }
+  }
 }

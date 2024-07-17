@@ -46,7 +46,12 @@ export class TransactionRepository {
     }
   }
 
-  public async getWalletTransactions() {
-    // get
+  public async getTransactionInfo(transactionId: Types.ObjectId) {
+    try {
+      return await Transaction.findById({ _id: transactionId });
+    } catch (err: any) {
+      console.error("Error getting transaction info:", err);
+      throw err;
+    }
   }
 }

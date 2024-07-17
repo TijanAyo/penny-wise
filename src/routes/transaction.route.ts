@@ -12,4 +12,10 @@ router.get(
   transactionController.getTransactions.bind(transactionController),
 );
 
+router.get(
+  "/view/:transactionId",
+  AuthMiddleWare,
+  transactionController.getTransactionInfo.bind(transactionController),
+);
+
 export { router as transactionRoute };
