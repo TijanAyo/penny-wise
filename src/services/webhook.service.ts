@@ -28,7 +28,7 @@ export class WebHookService {
     headers: this.FLUTTERWAVE_HEADER_CONFIG,
   });
 
-  private async verifyTransactionEvent(payloadId: number, res: Response) {
+  private async verifyTransactionEvent(payloadId: number) {
     try {
       const response = await this.FLUTTERWAVE_CLIENT.get(
         `transactions/${payloadId}/verify`,
@@ -57,7 +57,7 @@ export class WebHookService {
     res: Response,
   ) {
     try {
-      const { data } = await this.verifyTransactionEvent(payloadId, res);
+      const { data } = await this.verifyTransactionEvent(payloadId);
 
       logger.info("Got here 2");
       const user = await this._userRepository.findByEmail(customerMail);
