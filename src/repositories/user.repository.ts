@@ -3,14 +3,24 @@ import User from "../models/user.model";
 import { badRequestException } from "../helpers";
 import redisClient from "../config/redis";
 import { cryptHash } from "../utils";
+import { Types } from "mongoose";
 
 @injectable()
-export class AuthRepository {
+export class UserRepository {
   async findByEmail(email: string) {
     try {
       return await User.findOne({ emailAddress: email });
     } catch (err: any) {
       console.error("Error looking up user by email:", err);
+      throw err;
+    }
+  }
+
+  async findByUserId(userId: Types.ObjectId) {
+    try {
+      return await User.findById({ _id: userId });
+    } catch (err: any) {
+      console.error("Error looking up user by ID:", err);
       throw err;
     }
   }
@@ -33,11 +43,11 @@ export class AuthRepository {
     }
   }
 
-  async updateFieldInDB(email: string, key: string, value: any) {
+  async updateFieldInDB(email: string, updateData: Record<string, any>) {
     try {
       const update = await User.findOneAndUpdate(
         { emailAddress: email },
-        { [key]: value },
+        { $set: updateData },
       );
       if (!update)
         throw new badRequestException(
@@ -46,7 +56,7 @@ export class AuthRepository {
 
       return;
     } catch (err: any) {
-      console.log(`Error updating field ${key} in DB`);
+      console.log(`Error updating field in DB`);
       throw err;
     }
   }

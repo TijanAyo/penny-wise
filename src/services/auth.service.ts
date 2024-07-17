@@ -2,9 +2,10 @@ import { injectable } from "tsyringe";
 import {
   AppResponse,
   badRequestException,
+  URL,
   validationException,
 } from "../helpers";
-import { AuthRepository } from "../repositories";
+import { UserRepository } from "../repositories";
 import {
   forgotPasswordPayload,
   loginPayload,
@@ -32,8 +33,8 @@ import { environment } from "../config";
 @injectable()
 export class AuthService {
   constructor(
-    private readonly authRepository: AuthRepository,
-    private readonly emailQueueService: EmailQueue,
+    private readonly _userRepository: UserRepository,
+    private readonly _emailQueueService: EmailQueue,
   ) {}
 
   private readonly JWT_SECRET_KEY = environment.JWT_SECRET;
@@ -42,7 +43,7 @@ export class AuthService {
     try {
       const { email, firstName, lastName, phoneNumber, password } =
         await registerSchema.parseAsync(payload);
-      const user = await this.authRepository.findByEmail(email);
+      const user = await this._userRepository.findByEmail(email);
       if (user) {
         throw new badRequestException(
           "Email already associated with another user. Kindly specify a different email",
@@ -53,7 +54,7 @@ export class AuthService {
       const hashPassword = await hashPayload(password);
 
       // Create user
-      await this.authRepository.createUser(
+      await this._userRepository.createUser(
         email,
         firstName,
         lastName,
@@ -62,8 +63,8 @@ export class AuthService {
       );
 
       const verificationString = await generateVerificationURL(email);
-      const verificationURL = `http://localhost:8970/api/auth/verify-email/${verificationString}`; // TODO: Make base-url dynamic in nature
-      await this.emailQueueService.sendEmailQueue({
+      const verificationURL = `${URL}/api/auth/verify-email/${verificationString}`;
+      await this._emailQueueService.sendEmailQueue({
         type: "emailVerification",
         payload: {
           email,
@@ -88,9 +89,9 @@ export class AuthService {
       let user;
 
       if (email) {
-        user = await this.authRepository.findByEmail(email);
+        user = await this._userRepository.findByEmail(email);
       } else if (username) {
-        user = await this.authRepository.findByUsername(username);
+        user = await this._userRepository.findByUsername(username);
       }
 
       if (!user) {
@@ -124,7 +125,7 @@ export class AuthService {
       const { email } = await forgotPasswordSchema.parseAsync(payload);
 
       if (email) {
-        user = await this.authRepository.findByEmail(email);
+        user = await this._userRepository.findByEmail(email);
       }
 
       if (!user) {
@@ -135,9 +136,9 @@ export class AuthService {
 
       const OTP = await generateRandomOTP();
 
-      await this.authRepository.storeOTP(user.emailAddress, OTP);
+      await this._userRepository.storeOTP(user.emailAddress, OTP);
 
-      await this.emailQueueService.sendEmailQueue({
+      await this._emailQueueService.sendEmailQueue({
         type: "forgotPassword",
         payload: {
           email: user.emailAddress,
@@ -167,7 +168,7 @@ export class AuthService {
         await resetPasswordSchema.parseAsync(payload);
 
       if (email) {
-        user = await this.authRepository.findByEmail(email);
+        user = await this._userRepository.findByEmail(email);
       }
 
       if (!user) {
@@ -177,18 +178,18 @@ export class AuthService {
       }
 
       // Validate the OTP
-      await this.authRepository.validateOTP(email, otpCode);
+      await this._userRepository.validateOTP(email, otpCode);
 
       if (newPassword !== confirmPassword) {
         throw new badRequestException("Invalid input, password does not match");
       }
 
-      await this.authRepository.markOTPHasValidated(email);
+      await this._userRepository.markOTPHasValidated(email);
 
       // Hash the password
       const hashPassword = await hashPayload(confirmPassword);
 
-      await this.authRepository.updatePassword(email, hashPassword);
+      await this._userRepository.updatePassword(email, hashPassword);
 
       return AppResponse(null, "Password has been changed successfully", true);
     } catch (error: any) {
@@ -204,7 +205,7 @@ export class AuthService {
     try {
       decode = jwt.verify(token, this.JWT_SECRET_KEY) as jwt.JwtPayload;
 
-      const user = await this.authRepository.findByEmail(decode.uid);
+      const user = await this._userRepository.findByEmail(decode.uid);
       if (!user) {
         throw new badRequestException(
           "Email already not associated with any user",
@@ -216,11 +217,9 @@ export class AuthService {
         );
       }
 
-      await this.authRepository.updateFieldInDB(
-        user.emailAddress,
-        "isEmailVerified",
-        true,
-      );
+      await this._userRepository.updateFieldInDB(user.emailAddress, {
+        isEmailVerified: true,
+      });
 
       return AppResponse(
         `https://clientsideurl.place.here`, // TODO: Client side url for redirect

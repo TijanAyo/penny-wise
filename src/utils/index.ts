@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import { environment } from "../config";
 import jwt from "jsonwebtoken";
 import { createHash } from "crypto";
+import { format } from "date-fns";
 
 export const hashPayload = async (data: string) => {
   const salt = Number(environment.SALT_ROUND);
@@ -36,4 +37,14 @@ export const generateVerificationURL = async (uid: string) => {
   return jwt.sign(payload, environment.JWT_SECRET, {
     expiresIn: "30m",
   });
+};
+
+export const formatDate = (date: Date) => {
+  return format(date, "yyyy-MM-dd HH:mm:ss");
+};
+
+export const generateTransactionReference = () => {
+  const timestamp = Date.now();
+  const randomNum = Math.floor(Math.random() * 1000000);
+  return `${timestamp}${randomNum}`;
 };
