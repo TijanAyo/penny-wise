@@ -30,4 +30,16 @@ router.post(
   accountController.setNextOfKin.bind(accountController),
 );
 
+router.patch(
+  "/security/change-password",
+  AuthMiddleWare,
+  accountController.changePassword.bind(accountController),
+);
+
+router.post(
+  "/security/create-otp",
+  AuthMiddleWare,
+  accountController.createOTP.bind(accountController),
+);
+
 export { router as accountRoute };

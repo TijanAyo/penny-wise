@@ -1,5 +1,7 @@
 import { injectable } from "tsyringe";
 import {
+  changePasswordPayload,
+  createOtpPayload,
   createVirtualAccountNumberPayload,
   NextOfKin,
   setTransactionPinPayload,
@@ -7,7 +9,12 @@ import {
   VirtualAccountResponse,
 } from "../interface";
 import { environment } from "../config";
-import { formatDate, hashPayload } from "../utils";
+import {
+  compareHash,
+  formatDate,
+  generateRandomCodeOTP,
+  hashPayload,
+} from "../utils";
 import { ZodError } from "zod";
 import {
   AppResponse,
@@ -18,17 +25,21 @@ import axios from "axios";
 import { Types } from "mongoose";
 import {
   addNextOfKinSchema,
+  changePasswordSchema,
+  createOtpSchema,
   createVirtualAccountNumberSchema,
   setTransactionPinSchema,
   setUsernameSchema,
 } from "../validations";
 import { UserRepository, WalletRepository } from "../repositories";
+import { EmailQueue } from "../queues";
 
 @injectable()
 export class AccountService {
   constructor(
     private readonly _userRepository: UserRepository,
     private readonly _walletRepository: WalletRepository,
+    private readonly _emailQueueService: EmailQueue,
   ) {}
 
   private readonly FLUTTERWAVE_BASE_URL = `https://api.flutterwave.com/v3`;
@@ -193,7 +204,7 @@ export class AccountService {
     try {
       const user = await this._userRepository.findByUserId(userId);
       if (!user) {
-        console.log("createTransactionPinError: User not found");
+        console.log("addNextOfKinError: User not found");
         throw new badRequestException("User not found");
       }
 
@@ -239,7 +250,108 @@ export class AccountService {
     }
   }
 
-  public async changePassword() {}
+  public async createOTP(userId: Types.ObjectId, payload: createOtpPayload) {
+    try {
+      const user = await this._userRepository.findByUserId(userId);
+      if (!user) {
+        console.log("createOTPError: User not found");
+        throw new badRequestException("User not found");
+      }
+
+      const { reason } = await createOtpSchema.parseAsync(payload);
+      const codeLen = reason === "PIN_CHANGE" ? 5 : 6;
+
+      const otpCode = generateRandomCodeOTP(codeLen);
+      await this._userRepository.storeOTP(
+        user.emailAddress,
+        otpCode,
+        "otp_confirmation",
+      );
+      await this._emailQueueService.sendEmailQueue({
+        type: "createOTP",
+        payload: {
+          email: user.emailAddress,
+          otp: otpCode,
+        },
+      });
+
+      return AppResponse(null, "success", true);
+    } catch (error: any) {
+      console.log("createOTPError=>", error);
+      if (error instanceof ZodError) {
+        throw new validationException(error.errors[0].message);
+      }
+      throw error;
+    }
+  }
+
+  public async changePassword(
+    userId: Types.ObjectId,
+    payload: changePasswordPayload,
+  ) {
+    try {
+      const user = await this._userRepository.findByUserId(userId);
+      if (!user) {
+        console.log("changePasswordError: User not found");
+        throw new badRequestException("User not found");
+      }
+
+      const { oldPassword, newPassword, confirmPassword, otp } =
+        await changePasswordSchema.parseAsync(payload);
+
+      // Validate OTP provided by user
+      const isOtpValid = await this._userRepository.validateOTP(
+        user.emailAddress,
+        otp,
+        "otp_confirmation",
+      );
+
+      const oldPasswordMatch = await compareHash(oldPassword, user.password);
+      if (!oldPasswordMatch) {
+        throw new badRequestException(
+          "Incorrect Old Password, kindly check the input and try again",
+        );
+      }
+
+      if (newPassword !== confirmPassword) {
+        throw new badRequestException(
+          "Password does not match, kindly check input and try again",
+        );
+      }
+
+      if (isOtpValid) {
+        await this._userRepository.markOTPHasValidated(
+          user.emailAddress,
+          "otp_confirmation",
+        );
+      }
+
+      const hashNewPassword = await hashPayload(confirmPassword);
+
+      await Promise.all([
+        this._userRepository.updateFieldInDB(user.emailAddress, {
+          password: hashNewPassword,
+          passwordChangedAt: formatDate(this.NOW),
+        }),
+
+        this._emailQueueService.sendEmailQueue({
+          type: "credentialChangeNotification",
+          payload: {
+            email: user.emailAddress,
+            reason: "Password",
+          },
+        }),
+      ]);
+
+      return AppResponse(null, "Password changed successfully", true);
+    } catch (error: any) {
+      console.log("changePasswordError=>", error);
+      if (error instanceof ZodError) {
+        throw new validationException(error.errors[0].message);
+      }
+      throw error;
+    }
+  }
 
   public async updateProfile() {}
 }

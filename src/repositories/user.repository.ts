@@ -102,10 +102,10 @@ export class UserRepository {
     }
   }
 
-  async storeOTP(email: string, otp_code: string) {
+  async storeOTP(email: string, otp_code: string, reason: string) {
     try {
       const hashEmail = await cryptHash(email);
-      let redisKey = `otp_validation:${hashEmail}`;
+      let redisKey = `${reason}:${hashEmail}`;
       let otpExpiresIn = Date.now() + 15 * 60 * 1000; // 15 min
 
       // Store OTP and validation status in a hash
@@ -115,18 +115,18 @@ export class UserRepository {
         otpExpiresIn: String(otpExpiresIn),
       });
 
-      // TTL 1hour
-      await redisClient.expire(redisKey, 3600);
+      // TTL 30min
+      await redisClient.expire(redisKey, 1800);
     } catch (err: any) {
       console.error("Error storing otp in redis database", err);
       throw err;
     }
   }
 
-  private async retrieveOTP(email: string) {
+  private async retrieveOTP(email: string, reason: string) {
     try {
       const hashEmail = await cryptHash(email);
-      let redisKey = `otp_validation:${hashEmail}`;
+      let redisKey = `${reason}:${hashEmail}`;
 
       const [otp, isValidated, otpExpiresIn] = await Promise.all([
         redisClient.HGET(redisKey, "otp"),
@@ -147,9 +147,9 @@ export class UserRepository {
     }
   }
 
-  async validateOTP(email: string, providedOTP: string) {
+  async validateOTP(email: string, providedOTP: string, reason: string) {
     try {
-      const otpDetails = await this.retrieveOTP(email);
+      const otpDetails = await this.retrieveOTP(email, reason);
 
       if (!otpDetails.otpCode) {
         throw new badRequestException("OTP not found");
@@ -178,10 +178,10 @@ export class UserRepository {
     }
   }
 
-  async markOTPHasValidated(email: string) {
+  async markOTPHasValidated(email: string, reason: string) {
     try {
       const hashEmail = await cryptHash(email);
-      let redisKey = `otp_validation:${hashEmail}`;
+      let redisKey = `${reason}:${hashEmail}`;
       const updateField = await redisClient.HSET(redisKey, {
         isValidated: "true",
       });

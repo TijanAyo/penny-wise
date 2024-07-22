@@ -46,6 +46,15 @@ export class EmailQueue {
         case "emailVerification":
           await this.emailProcessor.emailVerificationWorker(payload);
           break;
+
+        case "createOTP":
+          await this.emailProcessor.createOtpWorker(payload);
+          break;
+
+        case "credentialChangeNotification":
+          await this.emailProcessor.credentialChangeNotificationWorker(payload);
+          break;
+
         default:
           throw new badRequestException("Unknown email job type");
       }

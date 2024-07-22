@@ -55,4 +55,24 @@ export class AccountController {
       return await this._errorHandler.handleCustomError(error, res);
     }
   }
+
+  public async createOTP(req: Request, res: Response) {
+    try {
+      const { _id } = req.user;
+      const result = await this._accountService.createOTP(_id, req.body);
+      return res.status(200).json(result);
+    } catch (error: any) {
+      return await this._errorHandler.handleCustomError(error, res);
+    }
+  }
+
+  public async changePassword(req: Request, res: Response) {
+    try {
+      const { _id } = req.user;
+      const result = await this._accountService.changePassword(_id, req.body);
+      return res.status(200).json(result);
+    } catch (error: any) {
+      return await this._errorHandler.handleCustomError(error, res);
+    }
+  }
 }

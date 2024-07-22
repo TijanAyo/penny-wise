@@ -1,0 +1,37 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>CONFIRMATION CODE</title>
+    <style>
+      body { font-family: "Arial", sans-serif; background-color: #f7f8fa;
+      margin: 0; padding: 0; } .container { width: 100%; max-width: 600px;
+      margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius:
+      10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); } .header { text-align:
+      center; padding: 20px 0; border-bottom: 1px solid #e0e0e0; } .header h1 {
+      margin: 0; font-size: 26px; color: #333333; } .content { padding: 20px 0;
+      text-align: center; } .content p { font-size: 16px; color: #555555;
+      margin: 15px 0; } .otp { display: inline-block; background-color: #f0f4f8;
+      padding: 15px 25px; font-size: 20px; letter-spacing: 2px; border: 1px
+      solid #d0dae5; border-radius: 8px; color: #333333; margin: 20px 0; }
+      .footer { text-align: center; padding: 20px 0; border-top: 1px solid
+      #e0e0e0; margin-top: 30px; } .footer p { font-size: 14px; color: #888888;
+      margin: 0; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>CONFIRMATION CODE</h1>
+      </div>
+      <div class="content">
+        <p>
+          Your PennyWise confirmation code is:
+          <div class="otp">{{otp_code}}</div>
+        </p>
+      </div>
+      <div class="footer">
+        <p><br />PennyWise</p>
+      </div>
+    </div>
+  </body>
+</html>

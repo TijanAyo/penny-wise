@@ -33,6 +33,7 @@ export interface Iuser extends Document {
   emailVerifiedAt: Date;
   phoneNumber: string;
   password: string;
+  passwordChangedAt: Date;
   pin: string;
   gender: string;
   photoUrl: string;
@@ -152,4 +153,15 @@ export interface setTransactionPinPayload {
 
 export interface setUsernamePayload {
   username: string;
+}
+
+export interface changePasswordPayload {
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+  otp: string;
+}
+
+export interface createOtpPayload {
+  reason: string;
 }

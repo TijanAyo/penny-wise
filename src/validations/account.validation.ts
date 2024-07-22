@@ -23,3 +23,14 @@ export const addNextOfKinSchema = z.object({
   country: z.string().max(20).trim().toLowerCase(),
   state: z.string().max(20).trim().toLowerCase(),
 });
+
+export const changePasswordSchema = z.object({
+  oldPassword: z.string().trim().max(20),
+  newPassword: z.string().trim().max(20),
+  confirmPassword: z.string().trim().max(20),
+  otp: z.string().trim().min(6).max(6),
+});
+
+export const createOtpSchema = z.object({
+  reason: z.enum(["PIN_CHANGE", "PASSWORD_CHANGE"]),
+});

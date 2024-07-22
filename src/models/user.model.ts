@@ -17,6 +17,7 @@ const userSchema: Schema<Iuser> = new Schema<Iuser>({
   emailVerifiedAt: { type: Date, required: false },
   phoneNumber: { type: String, trim: true, unique: true, required: true },
   password: { type: String, required: true },
+  passwordChangedAt: { type: Date, required: false },
   pin: { type: String },
   isPinSet: { type: Boolean, default: false },
   pinSetAt: { type: Date, required: false },

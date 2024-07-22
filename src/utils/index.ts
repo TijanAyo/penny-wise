@@ -28,6 +28,15 @@ export const generateRandomOTP = async () => {
   return otp.toString();
 };
 
+export const generateRandomCodeOTP = (codeLen: number) => {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let otp = "";
+  for (let i = 0; i < codeLen; i++) {
+    otp += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return otp;
+};
+
 export const cryptHash = async (data: string) => {
   return createHash("sha256").update(data).digest("hex");
 };

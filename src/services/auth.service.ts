@@ -138,7 +138,11 @@ export class AuthService {
 
       const OTP = await generateRandomOTP();
 
-      await this._userRepository.storeOTP(user.emailAddress, OTP);
+      await this._userRepository.storeOTP(
+        user.emailAddress,
+        OTP,
+        "otp_validation",
+      );
 
       await this._emailQueueService.sendEmailQueue({
         type: "forgotPassword",
@@ -180,13 +184,13 @@ export class AuthService {
       }
 
       // Validate the OTP
-      await this._userRepository.validateOTP(email, otpCode);
+      await this._userRepository.validateOTP(email, otpCode, "otp_validation");
 
       if (newPassword !== confirmPassword) {
         throw new badRequestException("Invalid input, password does not match");
       }
 
-      await this._userRepository.markOTPHasValidated(email);
+      await this._userRepository.markOTPHasValidated(email, "otp_validation");
 
       // Hash the password
       const hashPassword = await hashPayload(confirmPassword);

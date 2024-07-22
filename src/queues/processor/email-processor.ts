@@ -37,4 +37,30 @@ export class EmailProcessor {
       throw err;
     }
   }
+
+  async createOtpWorker(job: { email: string; otp: string }) {
+    try {
+      const { email, otp } = job;
+      await this.mailService.createOtpMail(email, otp);
+    } catch (err: any) {
+      console.log("createOtpWorker: An error occurred processing job", err);
+      throw err;
+    }
+  }
+
+  async credentialChangeNotificationWorker(job: {
+    email: string;
+    reason: string;
+  }) {
+    try {
+      const { email, reason } = job;
+      await this.mailService.credentialNotificationMail(email, reason);
+    } catch (err: any) {
+      console.log(
+        "credentialChangeNotificationWorker: An error occurred processing job",
+        err,
+      );
+      throw err;
+    }
+  }
 }
