@@ -1,6 +1,7 @@
 import { injectable } from "tsyringe";
 import {
   createVirtualAccountNumberPayload,
+  NextOfKin,
   setTransactionPinPayload,
   setUsernamePayload,
   VirtualAccountResponse,
@@ -16,6 +17,7 @@ import {
 import axios from "axios";
 import { Types } from "mongoose";
 import {
+  addNextOfKinSchema,
   createVirtualAccountNumberSchema,
   setTransactionPinSchema,
   setUsernameSchema,
@@ -180,6 +182,56 @@ export class AccountService {
       return AppResponse(null, "Transaction has been set successfully", true);
     } catch (error: any) {
       console.log("createTransactionPinError=>", error);
+      if (error instanceof ZodError) {
+        throw new validationException(error.errors[0].message);
+      }
+      throw error;
+    }
+  }
+
+  public async addNextOfKin(userId: Types.ObjectId, payload: NextOfKin) {
+    try {
+      const user = await this._userRepository.findByUserId(userId);
+      if (!user) {
+        console.log("createTransactionPinError: User not found");
+        throw new badRequestException("User not found");
+      }
+
+      const {
+        firstName,
+        lastName,
+        emailAddress,
+        relationship,
+        gender,
+        phoneNumber,
+        accountNumber,
+        accountName,
+        bankName,
+        city,
+        country,
+        state,
+      } = await addNextOfKinSchema.parseAsync(payload);
+
+      await this._userRepository.updateFieldInDB(user.emailAddress, {
+        nextOfKin: {
+          firstName,
+          lastName,
+          emailAddress,
+          relationship,
+          gender,
+          phoneNumber,
+          accountNumber,
+          accountName,
+          bankName,
+          city,
+          country,
+          state,
+        },
+      });
+
+      return AppResponse(null, "Next of kin added successfully", true);
+    } catch (error: any) {
+      console.log("addNextOfKinError=>", error);
       if (error instanceof ZodError) {
         throw new validationException(error.errors[0].message);
       }

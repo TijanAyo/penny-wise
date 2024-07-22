@@ -7,7 +7,7 @@ interface Address {
   country: string;
 }
 
-interface NextOfKin {
+export interface NextOfKin {
   firstName: string;
   lastName: string;
   emailAddress: string;

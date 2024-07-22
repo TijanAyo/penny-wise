@@ -24,4 +24,10 @@ router.post(
   accountController.setUsername.bind(accountController),
 );
 
+router.post(
+  "/set-next-of-kin",
+  AuthMiddleWare,
+  accountController.setNextOfKin.bind(accountController),
+);
+
 export { router as accountRoute };
