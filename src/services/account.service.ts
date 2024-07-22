@@ -1,10 +1,11 @@
 import { injectable } from "tsyringe";
 import {
   createVirtualAccountNumberPayload,
+  setTransactionPinPayload,
   VirtualAccountResponse,
 } from "../interface";
 import { environment } from "../config";
-import { hashPayload } from "../utils";
+import { formatDate, hashPayload } from "../utils";
 import { ZodError } from "zod";
 import {
   AppResponse,
@@ -13,7 +14,10 @@ import {
 } from "../helpers";
 import axios from "axios";
 import { Types } from "mongoose";
-import { createVirtualAccountNumberSchema } from "../validations";
+import {
+  createVirtualAccountNumberSchema,
+  setTransactionPinSchema,
+} from "../validations";
 import { UserRepository, WalletRepository } from "../repositories";
 
 @injectable()
@@ -28,6 +32,7 @@ export class AccountService {
     "Content-Type": "application/json",
     Authorization: `Bearer ${environment.FLUTTERWAVE_SECRET_KEY}`,
   };
+  private readonly NOW = new Date();
 
   private async sendRequestToFlutterwave(
     data: any,
@@ -109,7 +114,44 @@ export class AccountService {
     }
   }
 
-  public async createTransactionPin() {}
+  public async createUsername() {}
+
+  public async createTransactionPin(
+    userId: Types.ObjectId,
+    payload: setTransactionPinPayload,
+  ) {
+    try {
+      const { pin, confirm_pin } =
+        await setTransactionPinSchema.parseAsync(payload);
+
+      const user = await this._userRepository.findByUserId(userId);
+      if (!user) {
+        console.log("createTransactionPinError: User not found");
+        throw new badRequestException("User not found");
+      }
+
+      if (pin !== confirm_pin) {
+        console.log("Transaction pin does not match");
+        throw new badRequestException("Pin does not match");
+      }
+
+      const hashedPin = await hashPayload(confirm_pin);
+
+      await this._userRepository.updateFieldInDB(user.emailAddress, {
+        pin: hashedPin,
+        isPinSet: true,
+        pinSetAt: formatDate(this.NOW),
+      });
+
+      return AppResponse(null, "Transaction has been set successfully", true);
+    } catch (error: any) {
+      console.log("createTransactionPinError=>", error);
+      if (error instanceof ZodError) {
+        throw new validationException(error.errors[0].message);
+      }
+      throw error;
+    }
+  }
 
   public async changePassword() {}
 

@@ -143,3 +143,8 @@ export interface transactionData {
   description?: string;
   reference: string;
 }
+
+export interface setTransactionPinPayload {
+  pin: string;
+  confirm_pin: string;
+}

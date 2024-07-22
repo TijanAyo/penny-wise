@@ -21,6 +21,7 @@ import {
 import { ZodError } from "zod";
 import {
   compareHash,
+  formatDate,
   generateAccessToken,
   generateRandomOTP,
   generateVerificationURL,
@@ -38,6 +39,7 @@ export class AuthService {
   ) {}
 
   private readonly JWT_SECRET_KEY = environment.JWT_SECRET;
+  private readonly NOW = new Date();
 
   public async register(payload: registerPayload) {
     try {
@@ -219,6 +221,7 @@ export class AuthService {
 
       await this._userRepository.updateFieldInDB(user.emailAddress, {
         isEmailVerified: true,
+        emailVerifiedAt: formatDate(this.NOW),
       });
 
       return AppResponse(

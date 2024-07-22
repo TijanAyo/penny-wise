@@ -12,4 +12,10 @@ router.post(
   accountController.createVirtualAccount.bind(accountController),
 );
 
+router.post(
+  "/set-transaction-pin",
+  AuthMiddleWare,
+  accountController.setTransactionPin.bind(accountController),
+);
+
 export { router as accountRoute };
