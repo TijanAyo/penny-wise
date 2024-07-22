@@ -31,6 +31,12 @@ router.post(
 );
 
 router.patch(
+  "/update-profile-info",
+  AuthMiddleWare,
+  accountController.updateProfile.bind(accountController),
+);
+
+router.patch(
   "/security/change-password",
   AuthMiddleWare,
   accountController.changePassword.bind(accountController),

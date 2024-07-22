@@ -6,6 +6,7 @@ import {
   NextOfKin,
   setTransactionPinPayload,
   setUsernamePayload,
+  updateProfileInfoPayload,
   VirtualAccountResponse,
 } from "../interface";
 import { environment } from "../config";
@@ -30,6 +31,7 @@ import {
   createVirtualAccountNumberSchema,
   setTransactionPinSchema,
   setUsernameSchema,
+  updateProfileInfoSchema,
 } from "../validations";
 import { UserRepository, WalletRepository } from "../repositories";
 import { EmailQueue } from "../queues";
@@ -353,5 +355,59 @@ export class AccountService {
     }
   }
 
-  public async updateProfile() {}
+  public async updateProfileInfo(
+    userId: Types.ObjectId,
+    payload: updateProfileInfoPayload,
+  ) {
+    try {
+      const user = await this._userRepository.findByUserId(userId);
+      if (!user) {
+        console.log("changePasswordError: User not found");
+        throw new badRequestException("User not found");
+      }
+
+      const validatedPayload =
+        await updateProfileInfoSchema.parseAsync(payload);
+
+      // Check if the username exists and belongs to another user
+      if (validatedPayload.username !== undefined) {
+        const usernameExist = await this._userRepository.findByUsername(
+          validatedPayload.username,
+        );
+
+        if (usernameExist && !usernameExist._id.equals(userId)) {
+          throw new badRequestException(
+            "Username is already associated with another user",
+          );
+        }
+      }
+
+      const updatedAddress = {
+        ...user.address,
+        ...validatedPayload.address,
+      };
+
+      const updatedNextOfKin = {
+        ...user.nextOfKin,
+        ...validatedPayload.nextOfKin,
+      };
+
+      const updateData = {
+        username: validatedPayload.username ?? user.username,
+        gender: validatedPayload.gender ?? user.gender,
+        address: updatedAddress,
+        nextOfKin: updatedNextOfKin,
+      };
+
+      await this._userRepository.updateFieldInDB(user.emailAddress, updateData);
+
+      return AppResponse(null, "Updated successfully", true);
+    } catch (error: any) {
+      console.log("updateProfileError=>", error);
+      if (error instanceof ZodError) {
+        throw new validationException(error.errors[0].message);
+      }
+      throw error;
+    }
+  }
 }

@@ -165,3 +165,10 @@ export interface changePasswordPayload {
 export interface createOtpPayload {
   reason: string;
 }
+
+export interface updateProfileInfoPayload {
+  username?: string;
+  gender?: string;
+  address?: Address;
+  nextOfKin?: NextOfKin;
+}

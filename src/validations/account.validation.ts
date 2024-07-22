@@ -34,3 +34,32 @@ export const changePasswordSchema = z.object({
 export const createOtpSchema = z.object({
   reason: z.enum(["PIN_CHANGE", "PASSWORD_CHANGE"]),
 });
+
+export const updateProfileInfoSchema = z.object({
+  username: z.string().trim().toLowerCase().optional(),
+  gender: z.string().trim().toLowerCase().optional(),
+  address: z
+    .object({
+      streetAddress: z.string().trim().optional(),
+      city: z.string().trim().optional(),
+      state: z.string().trim().optional(),
+      country: z.string().trim().optional(),
+    })
+    .optional(),
+  nextOfKin: z
+    .object({
+      firstName: z.string().max(20).trim().toLowerCase().optional(),
+      lastName: z.string().max(20).trim().toLowerCase().optional(),
+      emailAddress: z.string().email().trim().optional(),
+      relationship: z.string().max(20).trim().toLowerCase().optional(),
+      gender: z.string().max(20).trim().toLowerCase().optional(),
+      phoneNumber: z.string().max(20).trim().toLowerCase().optional(),
+      accountNumber: z.string().max(20).trim().toLowerCase().optional(),
+      accountName: z.string().max(20).trim().toLowerCase().optional(),
+      bankName: z.string().max(20).trim().toLowerCase().optional(),
+      city: z.string().max(20).trim().toLowerCase().optional(),
+      country: z.string().max(20).trim().toLowerCase().optional(),
+      state: z.string().max(20).trim().toLowerCase().optional(),
+    })
+    .optional(),
+});
