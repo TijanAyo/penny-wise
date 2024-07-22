@@ -18,4 +18,10 @@ router.post(
   accountController.setTransactionPin.bind(accountController),
 );
 
+router.post(
+  "/set-username",
+  AuthMiddleWare,
+  accountController.setUsername.bind(accountController),
+);
+
 export { router as accountRoute };

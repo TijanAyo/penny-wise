@@ -2,6 +2,7 @@ import { injectable } from "tsyringe";
 import {
   createVirtualAccountNumberPayload,
   setTransactionPinPayload,
+  setUsernamePayload,
   VirtualAccountResponse,
 } from "../interface";
 import { environment } from "../config";
@@ -17,6 +18,7 @@ import { Types } from "mongoose";
 import {
   createVirtualAccountNumberSchema,
   setTransactionPinSchema,
+  setUsernameSchema,
 } from "../validations";
 import { UserRepository, WalletRepository } from "../repositories";
 
@@ -114,21 +116,52 @@ export class AccountService {
     }
   }
 
-  public async createUsername() {}
+  public async createUsername(
+    userId: Types.ObjectId,
+    payload: setUsernamePayload,
+  ) {
+    try {
+      const user = await this._userRepository.findByUserId(userId);
+      if (!user) {
+        console.log("createTransactionPinError: User not found");
+        throw new badRequestException("User not found");
+      }
+
+      const { username } = await setUsernameSchema.parseAsync(payload);
+
+      const usernameExist = await this._userRepository.findByUsername(username);
+      if (usernameExist) {
+        throw new badRequestException(
+          "Username is already associated with another user",
+        );
+      }
+
+      await this._userRepository.updateFieldInDB(user.emailAddress, {
+        username,
+      });
+
+      return AppResponse(null, "Username set successfully", true);
+    } catch (error: any) {
+      console.log("createUsernameError=>", error);
+      if (error instanceof ZodError) {
+        throw new validationException(error.errors[0].message);
+      }
+      throw error;
+    }
+  }
 
   public async createTransactionPin(
     userId: Types.ObjectId,
     payload: setTransactionPinPayload,
   ) {
     try {
-      const { pin, confirm_pin } =
-        await setTransactionPinSchema.parseAsync(payload);
-
       const user = await this._userRepository.findByUserId(userId);
       if (!user) {
         console.log("createTransactionPinError: User not found");
         throw new badRequestException("User not found");
       }
+      const { pin, confirm_pin } =
+        await setTransactionPinSchema.parseAsync(payload);
 
       if (pin !== confirm_pin) {
         console.log("Transaction pin does not match");

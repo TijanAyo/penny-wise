@@ -148,3 +148,7 @@ export interface setTransactionPinPayload {
   pin: string;
   confirm_pin: string;
 }
+
+export interface setUsernamePayload {
+  username: string;
+}
