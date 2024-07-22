@@ -27,6 +27,7 @@ export interface Iuser extends Document {
   firstName: string;
   lastName: string;
   username: string;
+  usernameUpdatedAt: Date;
   emailAddress: string;
   isEmailVerified: boolean;
   emailVerifiedAt: Date;

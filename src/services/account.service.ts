@@ -138,6 +138,7 @@ export class AccountService {
 
       await this._userRepository.updateFieldInDB(user.emailAddress, {
         username,
+        usernameUpdatedAt: formatDate(this.NOW),
       });
 
       return AppResponse(null, "Username set successfully", true);
