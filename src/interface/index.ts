@@ -172,3 +172,11 @@ export interface updateProfileInfoPayload {
   address?: Address;
   nextOfKin?: NextOfKin;
 }
+
+export interface disbursePayload {
+  accountBank: string;
+  accountNumber: string;
+  amount: number;
+  narration: string;
+  pin: string;
+}

@@ -1,7 +1,16 @@
 import { injectable } from "tsyringe";
 import { Types } from "mongoose";
 import { UserRepository, WalletRepository } from "../repositories";
-import { AppResponse, badRequestException } from "../helpers";
+import {
+  AppResponse,
+  badRequestException,
+  validationException,
+} from "../helpers";
+import { FLUTTERWAVE_CLIENT } from "../common/flutterwave";
+import { disbursePayload } from "../interface";
+import { generateTransactionReference } from "../utils";
+import { disburseSchema } from "../validations";
+import { ZodError } from "zod";
 
 @injectable()
 export class WalletService {
@@ -32,9 +41,45 @@ export class WalletService {
     }
   }
 
-  public async disburse() {
-    // Check if the user balance is able to make such transaction
-    // the receiver bank and account number
+  public async disburse(userId: Types.ObjectId, payload: disbursePayload) {
+    try {
+      const user = await this._userRepository.findByUserId(userId);
+      if (!user) {
+        console.log("disburseError: User not found");
+        throw new badRequestException("User not found");
+      }
+
+      const { accountBank, accountNumber, amount, narration } =
+        await disburseSchema.parseAsync(payload);
+
+      const response = await FLUTTERWAVE_CLIENT.post("/transfers", {
+        account_bank: accountBank,
+        account_number: accountNumber,
+        amount: amount,
+        currency: "NGN",
+        narration: narration,
+        reference: generateTransactionReference(),
+      });
+
+      console.log("disburse==>>>", response);
+
+      return "transaction has been done";
+
+      /*    
+        - After a successful debit (To be done in webhook service)
+
+        4. debit the amount from wallet balance
+        5. Update the transacation record with
+        6. Send an email notifying the user about the debit 
+
+      */
+    } catch (error: any) {
+      console.log("DisburseError=>", error);
+      if (error instanceof ZodError) {
+        throw new validationException(error.errors[0].message);
+      }
+      throw error;
+    }
   }
 
   public async p2pTransfer() {}
