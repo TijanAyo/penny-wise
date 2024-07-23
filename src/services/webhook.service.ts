@@ -1,12 +1,16 @@
 import { injectable } from "tsyringe";
-import { environment } from "../config";
+// import { environment } from "../config";
 import { Request, Response } from "express";
-import axios from "axios";
+// import axios from "axios";
 import { WalletRepository, UserRepository } from "../repositories";
 import { TransactionService } from "./transaction.service";
 import { TransactionStatus, TransactionType } from "../interface";
 import { generateTransactionReference } from "../utils";
 import { badRequestException, logger } from "../helpers";
+import {
+  FLUTTERWAVE_SECRET_HASH,
+  FLUTTERWAVE_CLIENT,
+} from "../common/flutterwave";
 
 @injectable()
 export class WebHookService {
@@ -16,22 +20,22 @@ export class WebHookService {
     private readonly _transactionService: TransactionService,
   ) {}
 
-  private readonly FLUTTERWAVE_BASE_URL = `https://api.flutterwave.com/v3`;
+  /* private readonly FLUTTERWAVE_BASE_URL = `https://api.flutterwave.com/v3`;
   private readonly FLUTTERWAVE_SECRET_HASH =
     environment.FLUTTERWAVE_SECRET_HASH;
   private readonly FLUTTERWAVE_HEADER_CONFIG = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${environment.FLUTTERWAVE_SECRET_KEY}`,
   };
-  private readonly FLUTTERWAVE_CLIENT = axios.create({
+   private readonly FLUTTERWAVE_CLIENT = axios.create({
     baseURL: this.FLUTTERWAVE_BASE_URL,
     headers: this.FLUTTERWAVE_HEADER_CONFIG,
-  });
+  }); */
 
   private async verifyTransactionEvent(payloadId: number) {
     try {
-      const response = await this.FLUTTERWAVE_CLIENT.get(
-        `transactions/${payloadId}/verify`,
+      const response = await FLUTTERWAVE_CLIENT.get(
+        `/transactions/${payloadId}/verify`,
       );
 
       console.log("Verification data ==>", response.data);
@@ -122,7 +126,7 @@ export class WebHookService {
 
   public async handleFlwWebhookEvents(req: Request, res: Response) {
     try {
-      if (this.FLUTTERWAVE_SECRET_HASH != req.headers["verif-hash"]) {
+      if (FLUTTERWAVE_SECRET_HASH != req.headers["verif-hash"]) {
         // This request isn't from Flutterwave; discard
         res.status(401).end();
       }
