@@ -37,6 +37,8 @@ export class WebHookService {
         throw new badRequestException("Transaction could not be verified");
       }
 
+      console.log("verifyTransaction->>>", response.data);
+
       return { data: response.data };
     } catch (error: any) {
       logger.error(`verifyFLWTransactionError:, ${error}`);
@@ -55,6 +57,8 @@ export class WebHookService {
       if (response.data.status !== "success") {
         throw new badRequestException("Transfer could not be verified");
       }
+
+      console.log("verifyTransfer-->", response.data);
 
       return true;
     } catch (error: any) {
