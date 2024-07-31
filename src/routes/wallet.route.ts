@@ -1,6 +1,6 @@
 import express, { Router } from "express";
 import { WalletController } from "../controllers";
-import { AuthMiddleWare, ValidateTransactionMiddleware } from "../middlewares";
+import { AuthMiddleWare, ValidateMiddleware } from "../middlewares";
 import { container } from "tsyringe";
 
 const router: Router = express.Router();
@@ -15,7 +15,7 @@ router.get(
 router.post(
   "/transfer",
   AuthMiddleWare,
-  ValidateTransactionMiddleware,
+  ValidateMiddleware,
   walletController.makeTransfer.bind(walletController),
 );
 

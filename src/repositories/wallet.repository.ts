@@ -67,22 +67,4 @@ export class WalletRepository {
       throw err;
     }
   }
-
-  async updateTransactionsInWallet(
-    userId: Types.ObjectId,
-    transactionId: Types.ObjectId,
-  ) {
-    try {
-      logger.info(
-        `Updating wallet for user: ${userId} with transaction: ${transactionId}`,
-      );
-      return await Wallet.updateOne(
-        { user: userId },
-        { $push: { transactions: transactionId } },
-      );
-    } catch (err: any) {
-      console.log(`WalletRepo: Error updating field in DB`);
-      throw err;
-    }
-  }
 }

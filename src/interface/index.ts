@@ -182,3 +182,26 @@ export interface disbursePayload {
   narration: string;
   pin: string;
 }
+
+export interface FlwTransferResponse {
+  data: {
+    id: number;
+    account_number: string;
+    bank_code: string;
+    full_name: string;
+    created_at: string;
+    currency: string;
+    debit_currency: string;
+    amount: number;
+    fee: number;
+    status: string;
+    reference: string;
+    meta: any;
+    narration: string;
+    approver: string | null;
+    complete_message: string;
+    requires_approval: number;
+    is_approved: number;
+    bank_name: string;
+  };
+}

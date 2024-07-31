@@ -61,9 +61,13 @@ export class WalletService {
         reference: generateTransactionReference(),
       });
 
-      console.log("disburse==>>>", response);
+      if (response.data.status !== "Success") {
+        throw new badRequestException(
+          "Transfer could not be processed, kindly try again in a few minute",
+        );
+      }
 
-      return "transaction has been done";
+      return AppResponse(null, response.data.message, true);
 
       /*    
         - After a successful debit (To be done in webhook service)
