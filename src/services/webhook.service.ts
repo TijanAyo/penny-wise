@@ -126,25 +126,20 @@ export class WebHookService {
 
   private async transferEvent(payloadId: number) {
     try {
-      /* const { data } = await this.verifyFLWTransfer(payloadId);
-      const { data } = await this.verifyFLWTransaction(payloadId) */
+      const verifyTransferData = await this.verifyFLWTransfer(payloadId);
+      const verifyTransactionData = await this.verifyFLWTransaction(payloadId);
 
-      const [transferData, transactionData] = await Promise.all([
-        this.verifyFLWTransfer(payloadId),
-        this.verifyFLWTransaction(payloadId),
-      ]);
+      console.log("verifyTransactionData->>>", verifyTransactionData);
 
-      console.log("transactionData->>>", transactionData);
-
-      if (!transferData) {
+      if (!verifyTransferData) {
         logger.error("Verification of transfer returned !true");
         throw new badRequestException(
           "An unexpected error has occurred... Kindly try again later",
         );
       }
 
-      const customerEmail = transactionData.data.customer.email;
-      const customerDebitAmount = transactionData.data.amount;
+      const customerEmail = verifyTransactionData.data.customer.email;
+      const customerDebitAmount = verifyTransactionData.data.amount;
 
       const user = await this._userRepository.findByEmail(customerEmail);
       if (!user) {
@@ -169,13 +164,14 @@ export class WebHookService {
 
       const newTransaction = {
         from: `Virtual account transfer`,
-        recipient_name: transactionData.data.meta.originatorname as string,
-        recipient_bank: transactionData.data.meta.bankname as string,
+        recipient_name: verifyTransactionData.data.meta
+          .originatorname as string,
+        recipient_bank: verifyTransactionData.data.meta.bankname as string,
         amount_credited: String(customerDebitAmount),
         type: TransactionType.DISBURSE,
         status: TransactionStatus.SUCCESSFUL,
         reference: generateTransactionReference(),
-        description: `Withdrawal from wallet to bank account ${transactionData.data.meta.originatoraccountnumber}`,
+        description: `Withdrawal from wallet to bank account ${verifyTransactionData.data.meta.originatoraccountnumber}`,
       };
 
       const { _id } = await this._walletRepository.getWalletInfo(user._id);
