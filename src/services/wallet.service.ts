@@ -61,7 +61,7 @@ export class WalletService {
         reference: generateTransactionReference(),
       });
 
-      if (response.data.status !== "Success") {
+      if (response.data.data.status !== "success") {
         throw new badRequestException(
           "Transfer could not be processed, kindly try again in a few minute",
         );
