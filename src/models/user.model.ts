@@ -23,7 +23,9 @@ const userSchema: Schema<Iuser> = new Schema<Iuser>({
   pinSetAt: { type: Date, required: false },
   gender: { type: String, trim: true },
   photoUrl: { type: String },
-  accountNumber: { type: String, trim: true, required: false },
+  settlementAccountNumber: { type: String, trim: true, required: false },
+  settlementAccountName: { type: String, trim: true, required: false },
+  isSettlementAccountSet: { type: Boolean, default: false },
   bankName: { type: String, trim: true, required: false },
   DOB: { type: String, trim: true, required: false },
   BVN: { type: String, trim: true, required: false },
@@ -46,10 +48,6 @@ const userSchema: Schema<Iuser> = new Schema<Iuser>({
     city: { type: String, trim: true },
     country: { type: String, trim: true },
     state: { type: String, trim: true },
-  },
-  wallet: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Wallet",
   },
 });
 

@@ -4,7 +4,7 @@ import { Itransaction, TransactionStatus, TransactionType } from "../interface";
 const transactionSchema: Schema<Itransaction> = new Schema<Itransaction>(
   {
     wallet: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Wallet",
       required: true,
     },

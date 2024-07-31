@@ -37,7 +37,9 @@ export interface Iuser extends Document {
   pin: string;
   gender: string;
   photoUrl: string;
-  accountNumber: string;
+  settlementAccountNumber: string;
+  settlementAccountName: string;
+  isSettlementAccountSet: boolean;
   bankName: string;
   DOB: string;
   BVN: string;

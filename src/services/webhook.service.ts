@@ -1,7 +1,5 @@
 import { injectable } from "tsyringe";
-// import { environment } from "../config";
 import { Request, Response } from "express";
-// import axios from "axios";
 import { WalletRepository, UserRepository } from "../repositories";
 import { TransactionService } from "./transaction.service";
 import { TransactionStatus, TransactionType } from "../interface";
@@ -20,19 +18,12 @@ export class WebHookService {
     private readonly _transactionService: TransactionService,
   ) {}
 
-  /* private readonly FLUTTERWAVE_BASE_URL = `https://api.flutterwave.com/v3`;
-  private readonly FLUTTERWAVE_SECRET_HASH =
-    environment.FLUTTERWAVE_SECRET_HASH;
-  private readonly FLUTTERWAVE_HEADER_CONFIG = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${environment.FLUTTERWAVE_SECRET_KEY}`,
-  };
-   private readonly FLUTTERWAVE_CLIENT = axios.create({
-    baseURL: this.FLUTTERWAVE_BASE_URL,
-    headers: this.FLUTTERWAVE_HEADER_CONFIG,
-  }); */
-
-  private async verifyTransactionEvent(payloadId: number) {
+  /**
+   * @desc "Verify funding event"
+   * @param payloadId
+   * @returns
+   */
+  private async verifyFundingEvent(payloadId: number) {
     try {
       const response = await FLUTTERWAVE_CLIENT.get(
         `/transactions/${payloadId}/verify`,
@@ -47,18 +38,24 @@ export class WebHookService {
       logger.info("Got here 1");
       return { data: response.data };
     } catch (error: any) {
-      console.error("verifyTransactionEventError:", error);
+      console.error("verifyFundingEventError:", error);
       throw error;
     }
   }
 
+  /**
+   * @desc "Funding event"
+   * @param payloadId
+   * @param customerMail
+   * @param payloadAmount
+   */
   private async chargeSuccessEvent(
     payloadId: number,
     customerMail: string,
     payloadAmount: number,
   ) {
     try {
-      const { data } = await this.verifyTransactionEvent(payloadId);
+      const { data } = await this.verifyFundingEvent(payloadId);
 
       logger.info("Got here 2");
       const user = await this._userRepository.findByEmail(customerMail);
