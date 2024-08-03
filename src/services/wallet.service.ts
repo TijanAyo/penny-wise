@@ -51,6 +51,7 @@ export class WalletService {
 
       const { accountBank, accountNumber, amount, narration } =
         await disburseSchema.parseAsync(payload);
+      const generatedReference = generateTransactionReference();
 
       const response = await FLUTTERWAVE_CLIENT.post("/transfers", {
         account_bank: accountBank,
@@ -58,7 +59,7 @@ export class WalletService {
         amount: amount,
         currency: "NGN",
         narration: narration,
-        reference: generateTransactionReference(),
+        reference: generatedReference,
       });
 
       if (response.data.status !== "success") {
@@ -66,6 +67,9 @@ export class WalletService {
           "Transfer could not be processed, kindly try again in a few minute",
         );
       }
+
+      // console.log("Genereated reference==>>");
+      console.log("Transfer response=>", response.data);
 
       return AppResponse(null, response.data.message, true);
 

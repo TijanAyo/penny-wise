@@ -3,6 +3,7 @@ import { environment } from "../config";
 import jwt from "jsonwebtoken";
 import { createHash } from "crypto";
 import { format } from "date-fns";
+import { randomUUID } from "crypto";
 
 export const hashPayload = async (data: string) => {
   const salt = Number(environment.SALT_ROUND);
@@ -53,7 +54,8 @@ export const formatDate = (date: Date) => {
 };
 
 export const generateTransactionReference = () => {
+  const prefix = environment.APP_NAME;
   const timestamp = Date.now();
-  const randomNum = Math.floor(Math.random() * 1000000);
-  return `${timestamp}${randomNum}`;
+  const uniqueValue = randomUUID();
+  return `${prefix}-${timestamp}-${uniqueValue}`;
 };
