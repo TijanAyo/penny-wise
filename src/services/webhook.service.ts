@@ -1,6 +1,10 @@
 import { injectable } from "tsyringe";
 import { Request, Response } from "express";
-import { WalletRepository, UserRepository } from "../repositories";
+import {
+  WalletRepository,
+  UserRepository,
+  TransactionRepository,
+} from "../repositories";
 import { TransactionService } from "./transaction.service";
 import {
   FlwTransferResponse,
@@ -20,6 +24,7 @@ export class WebHookService {
     private readonly _userRepository: UserRepository,
     private readonly _walletRepository: WalletRepository,
     private readonly _transactionService: TransactionService,
+    private readonly _transactionRepository: TransactionRepository,
   ) {}
 
   /**
@@ -80,7 +85,7 @@ export class WebHookService {
   }
 
   /**
-   * @desc "Funding event"
+   * @desc "Funding event occurred"
    * @param payloadId
    * @param customerMail
    * @param payloadAmount
@@ -109,8 +114,7 @@ export class WebHookService {
       }
 
       const generatedReference = generateTransactionReference("funding");
-
-      const transactionData = {
+      const newTransaction = {
         from: `Virtual account transfer`,
         recipient_name: data.data.meta.originatorname as string,
         recipient_bank: data.data.meta.bankname as string,
@@ -121,10 +125,15 @@ export class WebHookService {
         description: `Transfer to wallet from bank account ${data.data.meta.originatoraccountnumber} - ${data.data.meta.originatorname}`,
       };
 
-      const { _id } = await this._walletRepository.getWalletInfo(user._id);
+      /* const { _id } = await this._walletRepository.getWalletInfo(user._id);
       const transaction = await this._transactionService.createTransaction(
-        transactionData,
+        newTransaction,
         _id,
+      ); */
+
+      const transaction = await this._transactionRepository.generateWalletTrx(
+        user._id,
+        newTransaction,
       );
       if (!transaction) {
         console.log("An issue occured while trying to create transaction");
@@ -186,15 +195,20 @@ export class WebHookService {
         description: `Withdrawal from wallet to bank account`,
       };
 
-      const { _id } = await this._walletRepository.getWalletInfo(user._id);
+      /* const { _id } = await this._walletRepository.getWalletInfo(user._id);
       const transaction = await this._transactionService.createTransaction(
         newTransaction,
         _id,
+      ); */
+
+      const transaction = await this._transactionRepository.generateWalletTrx(
+        user._id,
+        newTransaction,
       );
 
       if (!transaction) {
         logger.error(
-          "TransferEventError: An issue occured while trying to create transaction",
+          "TransferEventError: An issue occured while trying to create transaction for wallet",
         );
         throw new badRequestException(
           "An unexpected error has occurred... Kindly try again later",

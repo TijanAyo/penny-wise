@@ -11,7 +11,7 @@ export class TransactionRepository {
 
   private readonly NOW = new Date();
 
-  public async createTransaction(
+  async createTransaction(
     transactionData: transactionData,
     walletId: Types.ObjectId,
   ) {
@@ -35,7 +35,7 @@ export class TransactionRepository {
     }
   }
 
-  public async getTransactions(userId: Types.ObjectId) {
+  async getTransactions(userId: Types.ObjectId) {
     try {
       const { _id } = await this._walletRepository.getWalletInfo(userId);
 
@@ -46,11 +46,25 @@ export class TransactionRepository {
     }
   }
 
-  public async getTransactionInfo(transactionId: Types.ObjectId) {
+  async getTransactionInfo(transactionId: Types.ObjectId) {
     try {
       return await Transaction.findById({ _id: transactionId });
     } catch (err: any) {
       console.error("Error getting transaction info:", err);
+      throw err;
+    }
+  }
+
+  async generateWalletTrx(
+    userId: Types.ObjectId,
+    newTransaction: transactionData,
+  ) {
+    try {
+      const { _id } = await this._walletRepository.getWalletInfo(userId);
+      const transaction = await this.createTransaction(newTransaction, _id);
+      return transaction;
+    } catch (err: any) {
+      console.error("Error creating wallet transaction info:", err);
       throw err;
     }
   }
