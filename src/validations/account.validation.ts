@@ -9,6 +9,12 @@ export const setUsernameSchema = z.object({
   username: z.string().trim().max(20).toLowerCase(),
 });
 
+export const setSettlementAccountSchema = z.object({
+  account_number: z.string().trim(),
+  account_name: z.string().trim(),
+  pin: z.string().trim(),
+});
+
 export const addNextOfKinSchema = z.object({
   firstName: z.string().max(20).trim().toLowerCase(),
   lastName: z.string().max(20).trim().toLowerCase(),

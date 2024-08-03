@@ -13,7 +13,7 @@ export const disburseSchema = z.object({
 });
 
 export const p2pSchema = z.object({
-  username: z.string().trim(),
+  username: z.string().trim().toLowerCase(),
   amount: z.number().positive(),
   pin: z.string().trim(),
 });

@@ -211,3 +211,9 @@ export interface p2pPayload {
   amount: number;
   pin: string;
 }
+
+export interface setSettlementAccountPayload {
+  account_number: string;
+  account_name: string;
+  pin: string;
+}

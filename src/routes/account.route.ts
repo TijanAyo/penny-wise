@@ -25,6 +25,12 @@ router.post(
 );
 
 router.post(
+  "/set-settlement-account",
+  AuthMiddleWare,
+  accountController.setSettlementAccount.bind(accountController),
+);
+
+router.post(
   "/set-next-of-kin",
   AuthMiddleWare,
   accountController.setNextOfKin.bind(accountController),

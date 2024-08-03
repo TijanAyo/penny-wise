@@ -46,6 +46,19 @@ export class AccountController {
     }
   }
 
+  public async setSettlementAccount(req: Request, res: Response) {
+    try {
+      const { _id } = req.user;
+      const result = await this._accountService.setSettlementAccount(
+        _id,
+        req.body,
+      );
+      return res.status(200).json(result);
+    } catch (error: any) {
+      return await this._errorHandler.handleCustomError(error, res);
+    }
+  }
+
   public async setNextOfKin(req: Request, res: Response) {
     try {
       const { _id } = req.user;

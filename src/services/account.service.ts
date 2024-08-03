@@ -4,6 +4,7 @@ import {
   createOtpPayload,
   createVirtualAccountNumberPayload,
   NextOfKin,
+  setSettlementAccountPayload,
   setTransactionPinPayload,
   setUsernamePayload,
   updateProfileInfoPayload,
@@ -29,6 +30,7 @@ import {
   changePasswordSchema,
   createOtpSchema,
   createVirtualAccountNumberSchema,
+  setSettlementAccountSchema,
   setTransactionPinSchema,
   setUsernameSchema,
   updateProfileInfoSchema,
@@ -137,15 +139,18 @@ export class AccountService {
   ) {
     try {
       const user = await this._userRepository.findByUserId(userId);
-      if (!user) {
-        console.log("createTransactionPinError: User not found");
-        throw new badRequestException("User not found");
-      }
 
       const { username } = await setUsernameSchema.parseAsync(payload);
 
       const usernameExist = await this._userRepository.findByUsername(username);
+
       if (usernameExist) {
+        if (usernameExist.username === user.username) {
+          throw new badRequestException(
+            "You are already making use of this username",
+          );
+        }
+
         throw new badRequestException(
           "Username is already associated with another user",
         );
@@ -156,7 +161,44 @@ export class AccountService {
         usernameUpdatedAt: formatDate(this.NOW),
       });
 
-      return AppResponse(null, "Username set successfully", true);
+      return AppResponse(null, "Username has been successfully", true);
+    } catch (error: any) {
+      console.log("createUsernameError=>", error);
+      if (error instanceof ZodError) {
+        throw new validationException(error.errors[0].message);
+      }
+      throw error;
+    }
+  }
+
+  public async setSettlementAccount(
+    userId: Types.ObjectId,
+    payload: setSettlementAccountPayload,
+  ) {
+    try {
+      const user = await this._userRepository.findByUserId(userId);
+
+      const { account_number, account_name, pin } =
+        await setSettlementAccountSchema.parseAsync(payload);
+
+      const doesPinMatch = await compareHash(pin, user.pin);
+      if (!doesPinMatch) {
+        throw new badRequestException(
+          "Invalid transaction pin, kindly check input and try again",
+        );
+      }
+
+      await this._userRepository.updateFieldInDB(user.emailAddress, {
+        settlementAccountNumber: account_number,
+        settlementAccountName: account_name,
+        isSettlementAccountSet: true,
+      });
+
+      return AppResponse(
+        null,
+        "Settlement account has been set successfully",
+        true,
+      );
     } catch (error: any) {
       console.log("createUsernameError=>", error);
       if (error instanceof ZodError) {
