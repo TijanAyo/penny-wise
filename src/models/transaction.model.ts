@@ -10,7 +10,7 @@ const transactionSchema: Schema<Itransaction> = new Schema<Itransaction>(
     },
     from: { type: String, trim: true },
     recipient_name: { type: String, trim: true, required: true },
-    recipient_bank: { type: String, trim: true, required: true },
+    recipient_bank: { type: String, trim: true, required: false },
     date: { type: String, trim: true, required: true },
     amount_credited: { type: String, trim: true },
     amount_debited: { type: String, trim: true },

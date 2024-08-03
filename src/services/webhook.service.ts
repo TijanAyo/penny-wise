@@ -5,12 +5,7 @@ import {
   UserRepository,
   TransactionRepository,
 } from "../repositories";
-import { TransactionService } from "./transaction.service";
-import {
-  FlwTransferResponse,
-  TransactionStatus,
-  TransactionType,
-} from "../interface";
+import { TransactionStatus, TransactionType } from "../interface";
 import { generateTransactionReference } from "../utils";
 import { badRequestException, logger } from "../helpers";
 import {
@@ -23,7 +18,6 @@ export class WebHookService {
   constructor(
     private readonly _userRepository: UserRepository,
     private readonly _walletRepository: WalletRepository,
-    private readonly _transactionService: TransactionService,
     private readonly _transactionRepository: TransactionRepository,
   ) {}
 
@@ -42,7 +36,7 @@ export class WebHookService {
         throw new badRequestException("Transaction could not be verified");
       }
 
-      console.log("verifyTransaction->>>", response.data);
+      logger.info(`verifyTransaction:, ${response.data}`);
 
       return { data: response.data };
     } catch (error: any) {
@@ -63,7 +57,7 @@ export class WebHookService {
         throw new badRequestException("Transfer could not be verified");
       }
 
-      console.log("verifyTransfer-->", response.data);
+      logger.info(`verifyTransfer:, ${response.data}`);
 
       const transferRef = response.data.data.reference;
       const result =

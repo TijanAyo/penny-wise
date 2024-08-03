@@ -19,4 +19,11 @@ router.post(
   walletController.makeTransfer.bind(walletController),
 );
 
+router.post(
+  "/p2p",
+  AuthMiddleWare,
+  ValidateMiddleware,
+  walletController.P2P.bind(walletController),
+);
+
 export { router as walletRoute };

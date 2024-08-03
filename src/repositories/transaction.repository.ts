@@ -1,13 +1,16 @@
-import { injectable } from "tsyringe";
+import { injectable, inject, delay } from "tsyringe";
 import Transaction from "../models/transaction.model";
 import { transactionData } from "../interface";
 import { formatDate } from "../utils";
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { WalletRepository } from "../repositories";
 
 @injectable()
 export class TransactionRepository {
-  constructor(private readonly _walletRepository: WalletRepository) {}
+  constructor(
+    @inject(delay(() => WalletRepository))
+    private readonly _walletRepository: WalletRepository,
+  ) {}
 
   private readonly NOW = new Date();
 
@@ -39,7 +42,7 @@ export class TransactionRepository {
     try {
       const { _id } = await this._walletRepository.getWalletInfo(userId);
 
-      return await Transaction.find({ wallet: _id });
+      return await Transaction.find({ wallet: _id }).sort({ createdAt: -1 });
     } catch (err: any) {
       console.error("Error getting transactions:", err);
       throw err;

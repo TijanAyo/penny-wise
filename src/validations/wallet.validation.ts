@@ -7,7 +7,13 @@ export const createVirtualAccountNumberSchema = z.object({
 export const disburseSchema = z.object({
   accountBank: z.string().trim(),
   accountNumber: z.string().trim(),
-  amount: z.number(),
+  amount: z.number().positive(),
   narration: z.string().trim(),
+  pin: z.string().trim(),
+});
+
+export const p2pSchema = z.object({
+  username: z.string().trim(),
+  amount: z.number().positive(),
   pin: z.string().trim(),
 });

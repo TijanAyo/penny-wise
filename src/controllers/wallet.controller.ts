@@ -11,9 +11,9 @@ export class WalletController {
   ) {}
 
   public async getWalletInfo(req: Request, res: Response) {
+    const { _id } = req.user;
     try {
-      const { _id } = req.user;
-      const result = await this._walletService.getVirtualAccountDetails(_id);
+      const result = await this._walletService.getWalletInfo(_id);
       return res.status(200).json(result);
     } catch (error: any) {
       return await this._errorHandler.handleCustomError(error, res);
@@ -21,9 +21,19 @@ export class WalletController {
   }
 
   public async makeTransfer(req: Request, res: Response) {
+    const { _id } = req.user;
     try {
-      const { _id } = req.user;
       const result = await this._walletService.disburse(_id, req.body);
+      return res.status(200).json(result);
+    } catch (error: any) {
+      return await this._errorHandler.handleCustomError(error, res);
+    }
+  }
+
+  public async P2P(req: Request, res: Response) {
+    const { _id } = req.user;
+    try {
+      const result = await this._walletService.p2pTransfer(_id, req.body);
       return res.status(200).json(result);
     } catch (error: any) {
       return await this._errorHandler.handleCustomError(error, res);

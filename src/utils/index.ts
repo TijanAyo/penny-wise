@@ -58,5 +58,5 @@ export const generateTransactionReference = (prefix?: string) => {
   const timestamp = Date.now();
   const uniqueValue = randomUUID();
 
-  return `${prfx}_${timestamp}_${uniqueValue}`;
+  return `${prfx}_${uniqueValue}_${timestamp}`;
 };

@@ -139,7 +139,7 @@ export interface VirtualAccountData {
 export interface transactionData {
   from?: string;
   recipient_name: string;
-  recipient_bank: string;
+  recipient_bank?: string;
   amount_credited?: string;
   amount_debited?: string;
   type: TransactionType;
@@ -204,4 +204,10 @@ export interface FlwTransferResponse {
     is_approved: number;
     bank_name: string;
   };
+}
+
+export interface p2pPayload {
+  username: string;
+  amount: number;
+  pin: string;
 }
