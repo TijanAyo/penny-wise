@@ -91,6 +91,10 @@ export class WalletService {
         );
       }
 
+      if (recipient.username === user.username) {
+        throw new badRequestException("You cannot send money to yourself");
+      }
+
       const senderName = `${user.firstName} ${user.lastName}`;
 
       const transfer = await this._walletRepository.P2PTransfer(
