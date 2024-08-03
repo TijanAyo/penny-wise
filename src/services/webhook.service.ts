@@ -23,7 +23,7 @@ export class WebHookService {
   ) {}
 
   /**
-   * @desc "Verify funding transaction"
+   * @desc "Verify FLW transaction"
    * @param payloadId
    * @returns
    */
