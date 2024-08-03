@@ -53,9 +53,10 @@ export const formatDate = (date: Date) => {
   return format(date, "yyyy-MM-dd HH:mm:ss");
 };
 
-export const generateTransactionReference = () => {
-  const prefix = environment.APP_NAME;
+export const generateTransactionReference = (prefix?: string) => {
+  const prfx = prefix ?? environment.APP_NAME;
   const timestamp = Date.now();
   const uniqueValue = randomUUID();
-  return `${prefix}-${timestamp}-${uniqueValue}`;
+
+  return `${prfx}_${timestamp}_${uniqueValue}`;
 };

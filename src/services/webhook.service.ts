@@ -51,7 +51,7 @@ export class WebHookService {
    * @param payloadId
    * @returns
    */
-  private async verifyFLWTransfer(payloadId: number): Promise<Boolean> {
+  private async verifyFLWTransfer(payloadId: number) {
     try {
       const response = await FLUTTERWAVE_CLIENT.get(`/transfers/${payloadId}`);
       if (response.data.status !== "success") {
@@ -60,7 +60,19 @@ export class WebHookService {
 
       console.log("verifyTransfer-->", response.data);
 
-      return true;
+      const transferRef = response.data.data.reference;
+      const result =
+        await this._walletRepository.retrieveTransactionRef(transferRef);
+
+      const data = {
+        debit_amount: response.data.data.amount,
+        narration: response.data.data.narration,
+        bank_name: response.data.data.bank_name,
+        full_name: response.data.data.full_name,
+        result,
+      };
+
+      return { success: true, data };
     } catch (error: any) {
       logger.error(`verifyFLWTransferError:, ${error}`);
       throw error;
@@ -96,6 +108,8 @@ export class WebHookService {
         throw new badRequestException("Balance could not be updated");
       }
 
+      const generatedReference = generateTransactionReference("funding");
+
       const transactionData = {
         from: `Virtual account transfer`,
         recipient_name: data.data.meta.originatorname as string,
@@ -103,7 +117,7 @@ export class WebHookService {
         amount_credited: String(payloadAmount),
         type: TransactionType.FUNDING,
         status: TransactionStatus.SUCCESSFUL,
-        reference: generateTransactionReference(),
+        reference: generatedReference,
         description: `Transfer to wallet from bank account ${data.data.meta.originatoraccountnumber} - ${data.data.meta.originatorname}`,
       };
 
@@ -127,19 +141,16 @@ export class WebHookService {
   private async transferEvent(payloadId: number) {
     try {
       const verifyTransferData = await this.verifyFLWTransfer(payloadId);
-      const verifyTransactionData = await this.verifyFLWTransaction(payloadId);
 
-      console.log("verifyTransactionData->>>", verifyTransactionData);
-
-      if (!verifyTransferData) {
+      if (!verifyTransferData.success) {
         logger.error("Verification of transfer returned !true");
         throw new badRequestException(
           "An unexpected error has occurred... Kindly try again later",
         );
       }
 
-      const customerEmail = verifyTransactionData.data.customer.email;
-      const customerDebitAmount = verifyTransactionData.data.amount;
+      const customerEmail = verifyTransferData.data.result.data;
+      const customerDebitAmount = verifyTransferData.data.debit_amount;
 
       const user = await this._userRepository.findByEmail(customerEmail);
       if (!user) {
@@ -153,6 +164,7 @@ export class WebHookService {
         user._id,
         customerDebitAmount,
       );
+
       if (!updateWallet) {
         logger.error(
           "TransferEventError: An error occurred while updating wallet",
@@ -162,16 +174,16 @@ export class WebHookService {
         );
       }
 
+      const generatedReference = generateTransactionReference("transfer");
       const newTransaction = {
         from: `Virtual account transfer`,
-        recipient_name: verifyTransactionData.data.meta
-          .originatorname as string,
-        recipient_bank: verifyTransactionData.data.meta.bankname as string,
+        recipient_name: verifyTransferData.data.full_name,
+        recipient_bank: verifyTransferData.data.bank_name,
         amount_credited: String(customerDebitAmount),
         type: TransactionType.DISBURSE,
         status: TransactionStatus.SUCCESSFUL,
-        reference: generateTransactionReference(),
-        description: `Withdrawal from wallet to bank account ${verifyTransactionData.data.meta.originatoraccountnumber}`,
+        reference: generatedReference,
+        description: `Withdrawal from wallet to bank account`,
       };
 
       const { _id } = await this._walletRepository.getWalletInfo(user._id);

@@ -51,7 +51,7 @@ export class WalletService {
 
       const { accountBank, accountNumber, amount, narration } =
         await disburseSchema.parseAsync(payload);
-      const generatedReference = generateTransactionReference();
+      const generatedReference = generateTransactionReference("disburse");
 
       const response = await FLUTTERWAVE_CLIENT.post("/transfers", {
         account_bank: accountBank,
@@ -67,9 +67,28 @@ export class WalletService {
           "Transfer could not be processed, kindly try again in a few minute",
         );
       }
-
-      // console.log("Genereated reference==>>");
       console.log("Transfer response=>", response.data);
+
+      const transactionRef = response.data.data.reference;
+      await this._walletRepository.storeTransactionRef(
+        transactionRef,
+        user.emailAddress,
+      );
+
+      /*
+        Map the reference to the user id 
+        on redis
+
+        where there reference is the key and the value if the user identifier e.g email
+
+        during verification return back the reference gotten into transferEvent
+
+        making use of the reference get the value and find for the user on the database
+
+        and get the field information you want to get
+
+
+      */
 
       return AppResponse(null, response.data.message, true);
 

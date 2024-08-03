@@ -2,6 +2,7 @@ import { injectable } from "tsyringe";
 import { Types } from "mongoose";
 import Wallet from "../models/wallet.model";
 import { badRequestException, logger } from "../helpers";
+import redisClient from "../config/redis";
 
 @injectable()
 export class WalletRepository {
@@ -64,6 +65,32 @@ export class WalletRepository {
       );
     } catch (err: any) {
       console.error("Error increasing wallet balance:", err);
+      throw err;
+    }
+  }
+
+  async storeTransactionRef(ref: string, user_email: string) {
+    try {
+      let key = ref;
+      const TTL = 86400; // 24 hours
+
+      await redisClient.HSET(key, {
+        email: user_email,
+      });
+
+      await redisClient.expire(key, TTL);
+    } catch (err: any) {
+      console.log("Error storing reference in redis db", err);
+      throw err;
+    }
+  }
+
+  async retrieveTransactionRef(key: string) {
+    try {
+      const transaction_val = await redisClient.HGET(key, "email");
+      return { data: transaction_val ?? null };
+    } catch (err: any) {
+      console.error("Error retrieving ref values from redis db", err);
       throw err;
     }
   }
