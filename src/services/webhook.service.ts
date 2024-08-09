@@ -57,11 +57,14 @@ export class WebHookService {
         throw new badRequestException("Transfer could not be verified");
       }
 
-      logger.info(`verifyTransfer:, ${response.data}`);
+      console.log(`verifyTransfer:, ${response.data}`);
 
       const transferRef = response.data.data.reference;
+      console.log("transferRef==>", transferRef);
       const result =
         await this._walletRepository.retrieveTransactionRef(transferRef);
+
+      console.log("result ==>", result);
 
       const data = {
         debit_amount: response.data.data.amount,
