@@ -57,9 +57,9 @@ export class WebHookService {
         throw new badRequestException("Transfer could not be verified");
       }
 
-      console.log(`verifyTransfer:, ${response.data}`);
+      logger.info(`verifyTransfer==> ${JSON.stringify(response.data)}`);
 
-      const transferRef = response.data.data.reference;
+      const transferRef: string = response.data.data.reference;
       console.log("transferRef==>", transferRef);
       const result =
         await this._walletRepository.retrieveTransactionRef(transferRef);
@@ -161,6 +161,8 @@ export class WebHookService {
 
       const customerEmail = verifyTransferData.data.result.data;
       const customerDebitAmount = verifyTransferData.data.debit_amount;
+
+      console.log("customerEmail ==>", customerEmail);
 
       const user = await this._userRepository.findByEmail(customerEmail);
       if (!user) {
