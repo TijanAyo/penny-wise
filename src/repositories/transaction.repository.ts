@@ -1,6 +1,6 @@
 import { injectable, inject, delay } from "tsyringe";
 import Transaction from "../models/transaction.model";
-import { transactionData } from "../interface";
+import { transactionData } from "../common/interface";
 import { formatDate } from "../utils";
 import mongoose, { Types } from "mongoose";
 import { WalletRepository } from "../repositories";

@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { Iwallet } from "../interface";
+import { Iwallet } from "../common/interface";
 
 const walletSchema: Schema<Iwallet> = new Schema<Iwallet>(
   {

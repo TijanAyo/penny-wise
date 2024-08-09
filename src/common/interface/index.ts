@@ -165,6 +165,7 @@ export interface changePasswordPayload {
 }
 
 export interface createOtpPayload {
+  email: string;
   reason: string;
 }
 
@@ -216,4 +217,10 @@ export interface setSettlementAccountPayload {
   account_number: string;
   account_name: string;
   pin: string;
+}
+
+export interface withdrawPayload {
+  amount: number;
+  pin: string;
+  otpCode: string;
 }

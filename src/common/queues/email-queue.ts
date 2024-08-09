@@ -1,7 +1,7 @@
 import { injectable } from "tsyringe";
 import Bull, { Job } from "bull";
-import queueConfig from "../config/queue-config";
-import { badRequestException } from "../helpers";
+import queueConfig from "../../config/queue-config";
+import { badRequestException } from "../../helpers";
 import { EmailProcessor } from "./processor/email-processor";
 
 @injectable()

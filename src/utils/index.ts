@@ -24,11 +24,20 @@ export const generateAccessToken = async (userId: string) => {
   });
 };
 
+/**
+ * @desc 'Generate a random 6 digit number'
+ * @returns
+ */
 export const generateRandomOTP = async () => {
   const otp = Math.floor(100000 + Math.random() * 900000);
   return otp.toString();
 };
 
+/**
+ * @desc 'Generate a random code based off provided length'
+ * @param codeLen
+ * @returns
+ */
 export const generateRandomCodeOTP = (codeLen: number) => {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let otp = "";

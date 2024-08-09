@@ -71,8 +71,7 @@ export class AccountController {
 
   public async createOTP(req: Request, res: Response) {
     try {
-      const { _id } = req.user;
-      const result = await this._accountService.createOTP(_id, req.body);
+      const result = await this._accountService.createOTP(req.body);
       return res.status(200).json(result);
     } catch (error: any) {
       return await this._errorHandler.handleCustomError(error, res);

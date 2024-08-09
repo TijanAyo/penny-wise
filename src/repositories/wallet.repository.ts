@@ -4,7 +4,7 @@ import Wallet from "../models/wallet.model";
 import { badRequestException } from "../helpers";
 import redisClient from "../config/redis";
 import { TransactionRepository } from "./transaction.repository";
-import { TransactionStatus, TransactionType } from "../interface";
+import { TransactionStatus, TransactionType } from "../common/interface";
 import { generateTransactionReference } from "../utils";
 
 @injectable()

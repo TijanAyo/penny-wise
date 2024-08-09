@@ -8,16 +8,21 @@ import {
   validationException,
 } from "../helpers";
 import { FLUTTERWAVE_CLIENT } from "../common/flutterwave";
-import { disbursePayload, p2pPayload } from "../interface";
-import { generateTransactionReference } from "../utils";
-import { disburseSchema, p2pSchema } from "../validations";
+import {
+  disbursePayload,
+  p2pPayload,
+  withdrawPayload,
+} from "../common/interface";
+import { generateRandomOTP, generateTransactionReference } from "../utils";
+import { disburseSchema, p2pSchema, withdrawSchema } from "../validations";
 import { ZodError } from "zod";
-
+import { AccountService } from "./account.service";
 @injectable()
 export class WalletService {
   constructor(
     private readonly _userRepository: UserRepository,
     private readonly _walletRepository: WalletRepository,
+    private readonly _accountService: AccountService,
   ) {}
 
   public async getWalletInfo(userId: Types.ObjectId) {
@@ -37,13 +42,19 @@ export class WalletService {
     }
   }
 
-  public async disburse(userId: Types.ObjectId, payload: disbursePayload) {
+  public async disburse(
+    userId: Types.ObjectId,
+    payload: disbursePayload,
+    disburseType?: string,
+  ) {
     try {
       const user = await this._userRepository.findByUserId(userId);
 
       const { accountBank, accountNumber, amount, narration } =
         await disburseSchema.parseAsync(payload);
-      const generatedReference = generateTransactionReference("disburse");
+      const generatedReference = generateTransactionReference(
+        disburseType ? disburseType : "disburse",
+      );
 
       const response = await FLUTTERWAVE_CLIENT.post("/transfers", {
         account_bank: accountBank,
@@ -120,5 +131,62 @@ export class WalletService {
     }
   }
 
-  public async withdraw() {}
+  public async withdraw(userId: Types.ObjectId, payload: withdrawPayload) {
+    try {
+      const user = await this._userRepository.findByUserId(userId);
+
+      const { amount, pin, otpCode } = await withdrawSchema.parseAsync(payload);
+
+      // Validate OTP provided by user
+      const isOtpValid = await this._userRepository.validateOTP(
+        user.emailAddress,
+        otpCode,
+        "otp_confirmation",
+      );
+
+      // Mark OTP has valid
+      if (isOtpValid) {
+        await this._userRepository.markOTPHasValidated(
+          user.emailAddress,
+          "otp_confirmation",
+        );
+      }
+
+      const withdrawalPayload = {
+        accountBank: "058",
+        accountNumber: user.settlementAccountNumber,
+        amount,
+        narration: "Withdrawal",
+        pin,
+      };
+
+      // Make withdrawals
+      const response = await this.disburse(
+        user._id,
+        withdrawalPayload,
+        "withdrawal",
+      );
+
+      if (response.success) {
+        // Queue an email notifiying the user about the withdrawal
+        return AppResponse(
+          null,
+          "Withdrawal was made to your settlement account",
+          true,
+        );
+      }
+
+      // check code and validiity of code
+      // pass in amount, code and pin in response body
+
+      // hit FLW transfer api and send money to provided settlement account
+      // debit the user wallet balance with amount
+      // create a transaction
+
+      // return a successful response
+    } catch (error: any) {
+      logger.error(`WithdrawalError: ${error}`);
+      throw error;
+    }
+  }
 }

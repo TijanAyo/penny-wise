@@ -11,7 +11,7 @@ import {
   loginPayload,
   registerPayload,
   resetPasswordPayload,
-} from "../interface";
+} from "../common/interface";
 import {
   forgotPasswordSchema,
   loginSchema,
@@ -27,7 +27,7 @@ import {
   generateVerificationURL,
   hashPayload,
 } from "../utils";
-import { EmailQueue } from "../queues";
+import { EmailQueue } from "../common/queues";
 import jwt, { TokenExpiredError } from "jsonwebtoken";
 import { environment } from "../config";
 

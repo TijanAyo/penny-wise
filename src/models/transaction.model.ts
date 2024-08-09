@@ -1,5 +1,9 @@
 import mongoose, { Schema } from "mongoose";
-import { Itransaction, TransactionStatus, TransactionType } from "../interface";
+import {
+  Itransaction,
+  TransactionStatus,
+  TransactionType,
+} from "../common/interface";
 
 const transactionSchema: Schema<Itransaction> = new Schema<Itransaction>(
   {

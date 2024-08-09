@@ -6,7 +6,7 @@ import jwt, {
   TokenExpiredError,
 } from "jsonwebtoken";
 import User from "../models/user.model";
-import { Iuser } from "../interface";
+import { Iuser } from "../common/interface";
 
 declare module "express-serve-static-core" {
   interface Request {

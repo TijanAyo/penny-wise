@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { Iuser } from "../interface";
+import { Iuser } from "../common/interface";
 
 const userSchema: Schema<Iuser> = new Schema<Iuser>({
   firstName: { type: String, trim: true },
@@ -23,6 +23,7 @@ const userSchema: Schema<Iuser> = new Schema<Iuser>({
   pinSetAt: { type: Date, required: false },
   gender: { type: String, trim: true },
   photoUrl: { type: String },
+  // settlementAccountBank: { type: String, trim: true, required: false },
   settlementAccountNumber: { type: String, trim: true, required: false },
   settlementAccountName: { type: String, trim: true, required: false },
   isSettlementAccountSet: { type: Boolean, default: false },

@@ -26,4 +26,11 @@ router.post(
   walletController.P2P.bind(walletController),
 );
 
+router.post(
+  "/withdraw",
+  AuthMiddleWare,
+  ValidateMiddleware,
+  walletController.withdraw.bind(walletController),
+);
+
 export { router as walletRoute };

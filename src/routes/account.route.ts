@@ -49,8 +49,7 @@ router.patch(
 );
 
 router.post(
-  "/security/create-otp",
-  AuthMiddleWare,
+  "/otp/generate",
   accountController.createOTP.bind(accountController),
 );
 

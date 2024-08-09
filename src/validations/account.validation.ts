@@ -38,7 +38,8 @@ export const changePasswordSchema = z.object({
 });
 
 export const createOtpSchema = z.object({
-  reason: z.enum(["PIN_CHANGE", "PASSWORD_CHANGE"]),
+  email: z.string().email().trim(),
+  reason: z.enum(["PIN_CHANGE", "PASSWORD_CHANGE", "WITHDRAWAL"]),
 });
 
 export const updateProfileInfoSchema = z.object({

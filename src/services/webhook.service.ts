@@ -5,7 +5,7 @@ import {
   UserRepository,
   TransactionRepository,
 } from "../repositories";
-import { TransactionStatus, TransactionType } from "../interface";
+import { TransactionStatus, TransactionType } from "../common/interface";
 import { generateTransactionReference } from "../utils";
 import { badRequestException, logger } from "../helpers";
 import {
@@ -141,6 +141,10 @@ export class WebHookService {
     }
   }
 
+  /**
+   * @desc "Handle disburse events"
+   * @param payloadId
+   */
   private async transferEvent(payloadId: number) {
     try {
       const verifyTransferData = await this.verifyFLWTransfer(payloadId);

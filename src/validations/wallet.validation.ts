@@ -17,3 +17,9 @@ export const p2pSchema = z.object({
   amount: z.number().positive(),
   pin: z.string().trim(),
 });
+
+export const withdrawSchema = z.object({
+  amount: z.number().positive(),
+  pin: z.string().trim(),
+  otpCode: z.string().max(7),
+});

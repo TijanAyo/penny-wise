@@ -39,4 +39,14 @@ export class WalletController {
       return await this._errorHandler.handleCustomError(error, res);
     }
   }
+
+  public async withdraw(req: Request, res: Response) {
+    const { _id } = req.user;
+    try {
+      const result = await this._walletService.withdraw(_id, req.body);
+      return res.status(200).json(result);
+    } catch (error: any) {
+      return await this._errorHandler.handleCustomError(error, res);
+    }
+  }
 }

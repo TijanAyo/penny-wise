@@ -1,5 +1,5 @@
 import { injectable } from "tsyringe";
-import { Itransaction, transactionData } from "../interface";
+import { Itransaction, transactionData } from "../common/interface";
 import { TransactionRepository } from "../repositories";
 import mongoose, { Types } from "mongoose";
 import { AppResponse, badRequestException } from "../helpers";

@@ -9,12 +9,13 @@ import {
   setUsernamePayload,
   updateProfileInfoPayload,
   VirtualAccountResponse,
-} from "../interface";
+} from "../common/interface";
 import { environment } from "../config";
 import {
   compareHash,
   formatDate,
   generateRandomCodeOTP,
+  generateRandomOTP,
   hashPayload,
 } from "../utils";
 import { ZodError } from "zod";
@@ -36,7 +37,7 @@ import {
   updateProfileInfoSchema,
 } from "../validations";
 import { UserRepository, WalletRepository } from "../repositories";
-import { EmailQueue } from "../queues";
+import { EmailQueue } from "../common/queues";
 
 @injectable()
 export class AccountService {
@@ -294,18 +295,22 @@ export class AccountService {
     }
   }
 
-  public async createOTP(userId: Types.ObjectId, payload: createOtpPayload) {
+  public async createOTP(payload: createOtpPayload) {
+    let otpCode: Promise<string> | string;
+    let codeLen: number;
     try {
-      const user = await this._userRepository.findByUserId(userId);
+      const user = await this._userRepository.findByEmail(payload.email);
       if (!user) {
-        console.log("createOTPError: User not found");
+        console.log(
+          "createOTPError: User associated with this email not found",
+        );
         throw new badRequestException("User not found");
       }
 
       const { reason } = await createOtpSchema.parseAsync(payload);
-      const codeLen = reason === "PIN_CHANGE" ? 5 : 6;
+      codeLen = reason === "WITHDRAWAL" ? 7 : reason === "PIN_CHANGE" ? 5 : 6;
 
-      const otpCode = generateRandomCodeOTP(codeLen);
+      otpCode = generateRandomCodeOTP(codeLen);
       await this._userRepository.storeOTP(
         user.emailAddress,
         otpCode,
