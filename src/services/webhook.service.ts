@@ -57,14 +57,9 @@ export class WebHookService {
         throw new badRequestException("Transfer could not be verified");
       }
 
-      logger.info(`verifyTransfer==> ${response.data}`);
-
       const transferRef: string = response.data.data.reference;
-      console.log("transferRef==>", transferRef);
       const result =
         await this._walletRepository.retrieveTransactionRef(transferRef);
-
-      console.log("result ==>", result);
 
       const data = {
         debit_amount: response.data.data.amount,
@@ -137,6 +132,8 @@ export class WebHookService {
         throw new badRequestException("Transaction could not be updated");
       }
 
+      // TODO: Send credit alert email notification
+
       logger.info("Transaction successfully processed");
     } catch (error: any) {
       logger.error(`chargeSuccessEventError: ${error}`);
@@ -161,8 +158,6 @@ export class WebHookService {
 
       const customerEmail = verifyTransferData.data.result.data;
       const customerDebitAmount = verifyTransferData.data.debit_amount;
-
-      console.log("customerEmail ==>", customerEmail);
 
       const user = await this._userRepository.findByEmail(customerEmail);
       if (!user) {
@@ -191,7 +186,7 @@ export class WebHookService {
         from: `Virtual account transfer`,
         recipient_name: verifyTransferData.data.full_name,
         recipient_bank: verifyTransferData.data.bank_name,
-        amount_credited: String(customerDebitAmount),
+        amount_debited: String(customerDebitAmount),
         type: TransactionType.DISBURSE,
         status: TransactionStatus.SUCCESSFUL,
         reference: generatedReference,
@@ -218,7 +213,7 @@ export class WebHookService {
         );
       }
 
-      // send email notification on withdrawal
+      // TODO: send debit alert email notification on withdrawal
 
       logger.info("Transfer was successfully processed");
     } catch (error: any) {

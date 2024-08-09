@@ -13,16 +13,15 @@ import {
   p2pPayload,
   withdrawPayload,
 } from "../common/interface";
-import { generateRandomOTP, generateTransactionReference } from "../utils";
+import { generateTransactionReference } from "../utils";
 import { disburseSchema, p2pSchema, withdrawSchema } from "../validations";
 import { ZodError } from "zod";
-import { AccountService } from "./account.service";
+
 @injectable()
 export class WalletService {
   constructor(
     private readonly _userRepository: UserRepository,
     private readonly _walletRepository: WalletRepository,
-    private readonly _accountService: AccountService,
   ) {}
 
   public async getWalletInfo(userId: Types.ObjectId) {
@@ -168,7 +167,7 @@ export class WalletService {
       );
 
       if (response.success) {
-        // Queue an email notifiying the user about the withdrawal
+        // TODO: Queue an email notifiying the user about the withdrawal
         return AppResponse(
           null,
           `Withdrawal has successfully being queued, amount will be deposited into your 
@@ -176,15 +175,6 @@ export class WalletService {
           true,
         );
       }
-
-      // check code and validiity of code
-      // pass in amount, code and pin in response body
-
-      // hit FLW transfer api and send money to provided settlement account
-      // debit the user wallet balance with amount
-      // create a transaction
-
-      // return a successful response
     } catch (error: any) {
       logger.error(`WithdrawalError: ${error}`);
       throw error;

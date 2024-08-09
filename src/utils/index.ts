@@ -25,26 +25,15 @@ export const generateAccessToken = async (userId: string) => {
 };
 
 /**
- * @desc 'Generate a random 6 digit number'
+ * @desc 'Generate a random code digit number based off the provided length'
  * @returns
  */
-export const generateRandomOTP = async () => {
-  const otp = Math.floor(100000 + Math.random() * 900000);
-  return otp.toString();
-};
+export const generateRandomOTP = (codeLen: number) => {
+  const min = Math.pow(10, codeLen - 1);
+  const max = Math.pow(10, codeLen) - 1;
+  const otp = Math.floor(min + Math.random() * (max - min + 1));
 
-/**
- * @desc 'Generate a random code based off provided length'
- * @param codeLen
- * @returns
- */
-export const generateRandomCodeOTP = (codeLen: number) => {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let otp = "";
-  for (let i = 0; i < codeLen; i++) {
-    otp += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return otp;
+  return otp.toString();
 };
 
 export const cryptHash = async (data: string) => {

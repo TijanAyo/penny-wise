@@ -136,7 +136,7 @@ export class AuthService {
         );
       }
 
-      const OTP = await generateRandomOTP();
+      const OTP = generateRandomOTP(6);
 
       await this._userRepository.storeOTP(
         user.emailAddress,

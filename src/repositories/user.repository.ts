@@ -152,7 +152,8 @@ export class UserRepository {
       const otpDetails = await this.retrieveOTP(email, reason);
 
       if (!otpDetails.otpCode) {
-        throw new badRequestException("OTP not found");
+        console.log("OTP code not found in redis DB");
+        throw new badRequestException("Invalid OTP code");
       }
       const currentTime = Date.now();
       const otpExpiresIn = parseInt(otpDetails.otpExpiresIn, 10);

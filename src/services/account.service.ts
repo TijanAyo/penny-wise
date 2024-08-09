@@ -14,7 +14,6 @@ import { environment } from "../config";
 import {
   compareHash,
   formatDate,
-  generateRandomCodeOTP,
   generateRandomOTP,
   getBankCode,
   hashPayload,
@@ -314,7 +313,7 @@ export class AccountService {
       const { reason } = await createOtpSchema.parseAsync(payload);
       codeLen = reason === "WITHDRAWAL" ? 7 : reason === "PIN_CHANGE" ? 5 : 6;
 
-      otpCode = generateRandomCodeOTP(codeLen);
+      otpCode = generateRandomOTP(codeLen);
       await this._userRepository.storeOTP(
         user.emailAddress,
         otpCode,
