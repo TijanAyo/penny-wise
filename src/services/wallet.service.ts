@@ -153,7 +153,7 @@ export class WalletService {
       }
 
       const withdrawalPayload = {
-        accountBank: "058",
+        accountBank: "057",
         accountNumber: user.settlementAccountNumber,
         amount,
         narration: "Withdrawal",
