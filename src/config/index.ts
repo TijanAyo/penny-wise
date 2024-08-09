@@ -4,3 +4,4 @@ export * from "./environment";
 export * from "./mailer";
 export * from "./redis";
 export * from "./queue-config";
+export * from "./banks";

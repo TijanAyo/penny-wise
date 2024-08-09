@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { environment } from "../config";
+import { environment, BankData } from "../config";
 import jwt from "jsonwebtoken";
 import { createHash } from "crypto";
 import { format } from "date-fns";
@@ -68,4 +68,11 @@ export const generateTransactionReference = (prefix?: string) => {
   const uniqueValue = randomUUID();
 
   return `${prfx}_${uniqueValue}_${timestamp}`;
+};
+
+export const getBankCode = (bankName: string) => {
+  const bank = BankData.find(
+    (b) => b.name.toLowerCase() === bankName.toLowerCase(),
+  );
+  return bank ? bank.code : null;
 };

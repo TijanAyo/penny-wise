@@ -38,7 +38,8 @@ export interface Iuser extends Document {
   gender: string;
   photoUrl: string;
   settlementAccountNumber: string;
-  settlementAccountName: string;
+  settlementBankName: string;
+  settlementBankCode: string;
   isSettlementAccountSet: boolean;
   bankName: string;
   DOB: string;
@@ -215,7 +216,7 @@ export interface p2pPayload {
 
 export interface setSettlementAccountPayload {
   account_number: string;
-  account_name: string;
+  bank_name: string;
   pin: string;
 }
 

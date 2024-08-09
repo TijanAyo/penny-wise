@@ -153,7 +153,7 @@ export class WalletService {
       }
 
       const withdrawalPayload = {
-        accountBank: "057",
+        accountBank: user.settlementBankCode,
         accountNumber: user.settlementAccountNumber,
         amount,
         narration: "Withdrawal",
@@ -171,7 +171,8 @@ export class WalletService {
         // Queue an email notifiying the user about the withdrawal
         return AppResponse(
           null,
-          "Withdrawal was made to your settlement account",
+          `Withdrawal has successfully being queued, amount will be deposited into your 
+          account in less than 5 minute`,
           true,
         );
       }

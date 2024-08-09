@@ -16,6 +16,7 @@ import {
   formatDate,
   generateRandomCodeOTP,
   generateRandomOTP,
+  getBankCode,
   hashPayload,
 } from "../utils";
 import { ZodError } from "zod";
@@ -179,7 +180,7 @@ export class AccountService {
     try {
       const user = await this._userRepository.findByUserId(userId);
 
-      const { account_number, account_name, pin } =
+      const { account_number, bank_name, pin } =
         await setSettlementAccountSchema.parseAsync(payload);
 
       const doesPinMatch = await compareHash(pin, user.pin);
@@ -189,9 +190,12 @@ export class AccountService {
         );
       }
 
+      const bank_code = getBankCode(bank_name);
+      console.log("bank code ===>", bank_code);
       await this._userRepository.updateFieldInDB(user.emailAddress, {
         settlementAccountNumber: account_number,
-        settlementAccountName: account_name,
+        settlementBankName: bank_name,
+        settlementBankCode: bank_code,
         isSettlementAccountSet: true,
       });
 

@@ -57,7 +57,7 @@ export class WebHookService {
         throw new badRequestException("Transfer could not be verified");
       }
 
-      logger.info(`verifyTransfer==> ${JSON.stringify(response.data)}`);
+      logger.info(`verifyTransfer==> ${response.data}`);
 
       const transferRef: string = response.data.data.reference;
       console.log("transferRef==>", transferRef);

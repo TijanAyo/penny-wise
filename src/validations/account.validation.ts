@@ -11,7 +11,7 @@ export const setUsernameSchema = z.object({
 
 export const setSettlementAccountSchema = z.object({
   account_number: z.string().trim(),
-  account_name: z.string().trim(),
+  bank_name: z.string().trim(),
   pin: z.string().trim(),
 });
 
