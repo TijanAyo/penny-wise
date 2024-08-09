@@ -6,7 +6,7 @@
   "author": "TijanAyo <ayomidetijani6@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc && cp -r ./src/emails/templates ./dist/emails",
+    "build": "tsc && cp -r ./src/common/emails/templates ./dist/common/emails",
     "format": "prettier --write \"**/*.ts\"",
     "postinstall": "npm run build",
     "start": "npm run build && node ./dist/server.js",
