@@ -168,12 +168,7 @@ export class WalletService {
 
       if (response.success) {
         // TODO: Queue an email notifiying the user about the withdrawal
-        return AppResponse(
-          null,
-          `Withdrawal has successfully being queued, amount will be deposited into your 
-          account in less than 5 minute`,
-          true,
-        );
+        return AppResponse(null, `Withdrawal has successfully queued`, true);
       }
     } catch (error: any) {
       logger.error(`WithdrawalError: ${error}`);
