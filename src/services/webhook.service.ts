@@ -138,15 +138,19 @@ export class WebHookService {
       const emailForQueue = user.emailAddress;
       const queueData = {
         name: user.firstName,
-        alert_type: "Debit",
+        alert_type: "Credit",
         account_name: newTransaction.recipient_name,
         description: newTransaction.description,
         reference_number: newTransaction.reference,
         transaction_amount: newTransaction.amount_credited,
         transaction_date: formatDate(new Date()),
       };
+
+      console.log("emailForQueue", emailForQueue);
+      console.log("queueData", queueData);
+
       await this._emailQueueService.sendEmailQueue({
-        type: "credit",
+        type: "alert",
         payload: {
           emailForQueue,
           queueData,
@@ -243,6 +247,10 @@ export class WebHookService {
         transaction_amount: newTransaction.amount_debited,
         transaction_date: formatDate(new Date()),
       };
+
+      console.log("emailForQueue", emailForQueue);
+      console.log("queueData", queueData);
+
       await this._emailQueueService.sendEmailQueue({
         type: "alert",
         payload: {
