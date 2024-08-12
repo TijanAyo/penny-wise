@@ -1,12 +1,32 @@
 # Pennywise - A jeetseed inspired savings API
 
+# Pennywise
+
 ## Introduction
 
 Pennywise is a simple savings application inspired by my first saving platform, [JetSeed](https://jetseed.com).
+It allows users to manage their finances easily and securely.
 
 ## Features
 
-- More info coming soon
+- **Account Management**: Users can create and manage their savings accounts.
+- **Transactions**:
+  - Users can transfer funds into their wallet.
+  - Users can receive funds into their wallet.
+  - Users can withdraw funds to their linked settlement accounts.
+  - Users can make internal transfers between Pennywise accounts (peer-to-peer).
+
+## Technologies Used
+
+- **Programming Language**: TypeScript
+- **Backend Framework**: Express.js
+- **Database**: MongoDB
+- **Queue**: Redis
+- **Design Principles**: Object-Oriented Programming (OOP), Dependency Injection
+
+## Documentation
+
+Pennywise utilizes Postman for API documentation. You can access the Postman collection link to your Postman collection [here](https://example.com) to learn about the available API endpoints and their functionalities.
 
 ## Installation
 
@@ -15,7 +35,7 @@ Follow these steps to set up the project locally:
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/yourusername/pennywise.git
+   git clone https://github.com/TijanAyo/penny-wise.git
    ```
 
 2. **Navigate to the project directory**
