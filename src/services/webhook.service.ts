@@ -149,17 +149,27 @@ export class WebHookService {
       console.log("emailForQueue", emailForQueue);
       console.log("queueData", queueData);
 
+      const {
+        name,
+        alert_type,
+        account_name,
+        description,
+        reference_number,
+        transaction_amount,
+        transaction_date,
+      } = queueData;
+
       await this._emailQueueService.sendEmailQueue({
         type: "alert",
         payload: {
-          email: emailForQueue,
-          name: user.firstName,
-          alert_type: "Credit",
-          account_name: newTransaction.recipient_name,
-          description: newTransaction.description,
-          reference_number: newTransaction.reference,
-          transaction_amount: newTransaction.amount_credited,
-          transaction_date: formatDate(new Date()),
+          emailForQueue,
+          name,
+          alert_type,
+          account_name,
+          description,
+          reference_number,
+          transaction_amount,
+          transaction_date,
         },
       });
 
