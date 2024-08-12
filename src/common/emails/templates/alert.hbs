@@ -1,0 +1,59 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alert</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 0; padding: 0;
+      background-color: #f9f9f9; color: #333; } .container { max-width: 600px;
+      margin: 20px auto; padding: 20px; background-color: #fff; border: 1px
+      solid #ddd; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+      h1 { font-size: 24px; color: #007bff; margin-bottom: 20px; } p {
+      font-size: 16px; line-height: 1.5; margin-bottom: 20px; } table { width:
+      100%; border-collapse: collapse; margin-bottom: 20px; } table th, table td
+      { padding: 10px; text-align: left; border: 1px solid #ddd; } table th {
+      background-color: #f2f2f2; } .footer { font-size: 14px; color: #666;
+      text-align: center; margin-top: 20px; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Dear {{data.name}},</h1>
+      <p>
+        We wish to inform you that a
+        {{data.alert_type}}
+        transaction recently occurred on your account.
+      </p>
+
+      <p>Please find below details of the transaction:</p>
+
+      <h2>Transaction Details - {{data.alert_type}}</h2>
+
+      <table>
+        <tr>
+          <th>Account Name</th>
+          <td>{{data.account_name}}</td>
+        </tr>
+        <tr>
+          <th>Description</th>
+          <td>{{data.description}}</td>
+        </tr>
+        <tr>
+          <th>Reference Number</th>
+          <td>{{data.reference_number}}</td>
+        </tr>
+        <tr>
+          <th>Transaction Amount</th>
+          <td>{{data.transaction_amount}}</td>
+        </tr>
+        <tr>
+          <th>Transaction Date & Time</th>
+          <td>{{data.transaction_date_time}}</td>
+        </tr>
+      </table>
+      <div class="footer">
+        If you have any questions, please contact our support team.
+      </div>
+    </div>
+  </body>
+</html>

@@ -63,4 +63,25 @@ export class EmailProcessor {
       throw err;
     }
   }
+
+  async alertWorker(job: {
+    email: string;
+    data: {
+      name: string;
+      alert_type: string;
+      account_name: string;
+      description: string;
+      reference_number: string;
+      transaction_amount: string;
+      transaction_date: string;
+    };
+  }) {
+    try {
+      const { email, data } = job;
+      await this.mailService.sendAlertMail(email, data);
+    } catch (err: any) {
+      console.log("alertWorkerError", err);
+      throw err;
+    }
+  }
 }

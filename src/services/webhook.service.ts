@@ -6,12 +6,13 @@ import {
   TransactionRepository,
 } from "../repositories";
 import { TransactionStatus, TransactionType } from "../common/interface";
-import { generateTransactionReference } from "../utils";
+import { formatDate, generateTransactionReference } from "../utils";
 import { badRequestException, logger } from "../helpers";
 import {
   FLUTTERWAVE_SECRET_HASH,
   FLUTTERWAVE_CLIENT,
 } from "../common/flutterwave";
+import { EmailQueue } from "../common/queues";
 
 @injectable()
 export class WebHookService {
@@ -19,6 +20,7 @@ export class WebHookService {
     private readonly _userRepository: UserRepository,
     private readonly _walletRepository: WalletRepository,
     private readonly _transactionRepository: TransactionRepository,
+    private readonly _emailQueueService: EmailQueue,
   ) {}
 
   /**
@@ -133,6 +135,23 @@ export class WebHookService {
       }
 
       // TODO: Send credit alert email notification
+      const emailForQueue = user.emailAddress;
+      const queueData = {
+        name: user.firstName,
+        alert_type: "Debit",
+        account_name: newTransaction.recipient_name,
+        description: newTransaction.description,
+        reference_number: newTransaction.reference,
+        transaction_amount: newTransaction.amount_credited,
+        transaction_date: formatDate(new Date()),
+      };
+      await this._emailQueueService.sendEmailQueue({
+        type: "credit",
+        payload: {
+          emailForQueue,
+          queueData,
+        },
+      });
 
       logger.info("Transaction successfully processed");
     } catch (error: any) {
@@ -214,6 +233,23 @@ export class WebHookService {
       }
 
       // TODO: send debit alert email notification on withdrawal
+      const emailForQueue = user.emailAddress;
+      const queueData = {
+        name: user.firstName,
+        alert_type: "Debit",
+        account_name: newTransaction.recipient_name,
+        description: newTransaction.description,
+        reference_number: newTransaction.reference,
+        transaction_amount: newTransaction.amount_debited,
+        transaction_date: formatDate(new Date()),
+      };
+      await this._emailQueueService.sendEmailQueue({
+        type: "alert",
+        payload: {
+          emailForQueue,
+          queueData,
+        },
+      });
 
       logger.info("Transfer was successfully processed");
     } catch (error: any) {

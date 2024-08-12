@@ -55,6 +55,10 @@ export class EmailQueue {
           await this.emailProcessor.credentialChangeNotificationWorker(payload);
           break;
 
+        case "alert":
+          await this.emailProcessor.alertWorker(payload);
+          break;
+
         default:
           throw new badRequestException("Unknown email job type");
       }

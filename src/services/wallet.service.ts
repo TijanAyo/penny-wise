@@ -33,7 +33,6 @@ export class WalletService {
       return AppResponse(
         walletInfo,
         "Wallet information retrieved successfully",
-        true,
       );
     } catch (error: any) {
       logger.error(`getWalletInfoError: ${error}`);
@@ -71,13 +70,15 @@ export class WalletService {
       }
       console.log("Transfer response=>", response.data);
 
+      /* Store the transaction reference so it can be used to validate the 
+       transaction when the transfer event is received */
       const transactionRef = response.data.data.reference;
       await this._walletRepository.storeTransactionRef(
         transactionRef,
         user.emailAddress,
       );
 
-      return AppResponse(null, response.data.message, true);
+      return AppResponse(null, response.data.message);
     } catch (error: any) {
       logger.error(`disburseError: ${error}`);
       if (error instanceof ZodError) {
