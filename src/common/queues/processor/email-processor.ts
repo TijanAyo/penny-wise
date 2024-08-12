@@ -1,5 +1,6 @@
 import { injectable } from "tsyringe";
 import { SendMails } from "../../emails";
+import { alertPayload } from "../../interface";
 
 @injectable()
 export class EmailProcessor {
@@ -54,6 +55,7 @@ export class EmailProcessor {
   }) {
     try {
       const { email, reason } = job;
+
       await this.mailService.credentialNotificationMail(email, reason);
     } catch (err: any) {
       console.log(
@@ -64,20 +66,12 @@ export class EmailProcessor {
     }
   }
 
-  async alertWorker(job: {
-    email: string;
-    data: {
-      name: string;
-      alert_type: string;
-      account_name: string;
-      description: string;
-      reference_number: string;
-      transaction_amount: string;
-      transaction_date: string;
-    };
-  }) {
+  async alertWorker(job: { email: string; data: alertPayload }) {
     try {
       const { email, data } = job;
+
+      console.log("alertWorker:", email);
+
       await this.mailService.sendAlertMail(email, data);
     } catch (err: any) {
       console.log("alertWorkerError", err);

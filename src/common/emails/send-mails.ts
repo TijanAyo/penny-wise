@@ -1,6 +1,7 @@
 import renderTemplate from "./render-template";
 import mailer from "../../config/mailer";
 import { injectable } from "tsyringe";
+import { alertPayload } from "../interface";
 
 @injectable()
 export class SendMails {
@@ -43,20 +44,11 @@ export class SendMails {
     await mailer(email, emailSubject, emailBody);
   }
 
-  public async sendAlertMail(
-    email: string,
-    data: {
-      name: string;
-      alert_type: string;
-      account_name: string;
-      description: string;
-      reference_number: string;
-      transaction_amount: string;
-      transaction_date: string;
-    },
-  ) {
+  public async sendAlertMail(email: string, data: alertPayload) {
     const emailSubject: string = `PennyWise Alert`;
     const emailBody = renderTemplate("alert", { data });
+
+    console.log("email from sendAlertMail:", email);
 
     await mailer(email, emailSubject, emailBody);
   }

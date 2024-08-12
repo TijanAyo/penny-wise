@@ -225,3 +225,13 @@ export interface withdrawPayload {
   pin: string;
   otpCode: string;
 }
+
+export interface alertPayload {
+  name: string;
+  alert_type: string;
+  account_name: string;
+  description: string;
+  reference_number: string;
+  transaction_amount: string;
+  transaction_date: string;
+}
