@@ -1,5 +1,5 @@
 import express, { Router } from "express";
-import { AuthMiddleWare } from "../middlewares";
+import { AuthMiddleWare, validateQueryParams } from "../middlewares";
 import { TransactionController } from "../controllers";
 import { container } from "tsyringe";
 
@@ -9,6 +9,7 @@ const transactionController = container.resolve(TransactionController);
 router.get(
   "/all-transactions",
   AuthMiddleWare,
+  validateQueryParams,
   transactionController.getTransactions.bind(transactionController),
 );
 

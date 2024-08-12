@@ -13,7 +13,15 @@ export class TransactionController {
   public async getTransactions(req: Request, res: Response) {
     try {
       const { _id } = req.user;
-      const result = await this._transactionService.viewAllTransaction(_id);
+
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 10;
+
+      const result = await this._transactionService.viewAllTransaction(
+        _id,
+        page,
+        limit,
+      );
       return res.status(200).json(result);
     } catch (error: any) {
       return await this._errorHandler.handleCustomError(error, res);

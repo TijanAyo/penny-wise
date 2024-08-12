@@ -4,7 +4,6 @@ import { badRequestException } from "../helpers";
 import redisClient from "../config/redis";
 import { cryptHash } from "../utils";
 import { Types } from "mongoose";
-import * as _ from "lodash";
 
 @injectable()
 export class UserRepository {
@@ -201,23 +200,26 @@ export class UserRepository {
 
   async viewProfileInfo(userId: Types.ObjectId) {
     try {
-      const profileInfo = await User.findOne({ _id: userId }).lean();
+      const profileInfo = await User.findOne(
+        { _id: userId },
+        {
+          firstName: 1,
+          lastName: 1,
+          emailAddress: 1,
+          phoneNumber: 1,
+          username: 1,
+          settlementAccountName: 1,
+          settlementAccountNumber: 1,
+          settlementBankCode: 1,
+          settlementBankName: 1,
+          nextOfKin: 1,
+        },
+      ).lean();
 
       if (!profileInfo) {
         throw new badRequestException("No profile info found");
       }
-
-      const omittedInfo = _.omit(profileInfo, [
-        "isEmailVerified",
-        "password",
-        "isPinSet",
-        "pin",
-        "pinSetAt",
-        "isSettlementAccountSet",
-        "isSettlementAccountSet",
-        "usernameUpdatedAt",
-      ]);
-      return omittedInfo;
+      return profileInfo;
     } catch (err: any) {
       console.error("Error fetching profile info", err);
       throw err;

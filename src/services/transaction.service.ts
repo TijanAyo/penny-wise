@@ -26,28 +26,35 @@ export class TransactionService {
     }
   }
 
-  public async viewAllTransaction(userId: Types.ObjectId) {
+  public async viewAllTransaction(
+    userId: Types.ObjectId,
+    page: number,
+    limit: number,
+  ) {
     try {
-      const transactions =
-        await this._transactionRepository.getTransactions(userId);
-      if (!transactions) {
-        throw new badRequestException(
-          "An error occurred while fetching transactions",
+      const { transactions, total } =
+        await this._transactionRepository.getTransactionHistory(
+          userId,
+          page,
+          limit,
         );
-      }
 
-      const data = transactions.map((transaction: Itransaction) => ({
-        id: transaction._id,
-        amount:
-          transaction.amount_credited !== undefined
-            ? `+${transaction.amount_credited}`
-            : ` -${transaction.amount_debited}`,
-        time: transaction.date,
-        status: transaction.status,
-        type: transaction.type,
-      }));
+      const totalPages = Math.ceil(total / limit);
+      const nextPage = page < totalPages ? page + 1 : null;
 
-      return AppResponse(data, "Transactions fetched successfully", true);
+      const previousPage = page > 1 ? page - 1 : null;
+
+      const data = {
+        transactions,
+        meta: {
+          currentPage: page,
+          totalPages: totalPages,
+          nextPage: nextPage,
+          previousPage: previousPage,
+        },
+      };
+
+      return AppResponse(data, "Transactions fetched successfully");
     } catch (error: any) {
       console.error("viewAllTransactionErr", error);
       throw error;
@@ -62,13 +69,12 @@ export class TransactionService {
       if (!transaction) {
         console.log("TransactionId could not be found");
         throw new badRequestException(
-          "An error occurred while fetching transaction infomation",
+          "An error occurred while fetching transaction information",
         );
       }
       return AppResponse(
         transaction,
-        "Transaction details fetched successfully",
-        true,
+        "Transaction information fetched successfully",
       );
     } catch (error: any) {
       console.error("getTransactionDetailsErr", error);

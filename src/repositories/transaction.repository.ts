@@ -2,8 +2,10 @@ import { injectable, inject, delay } from "tsyringe";
 import Transaction from "../models/transaction.model";
 import { transactionData } from "../common/interface";
 import { formatDate } from "../utils";
-import mongoose, { Types } from "mongoose";
+import { Types } from "mongoose";
 import { WalletRepository } from "../repositories";
+import * as _ from "lodash";
+import { badRequestException } from "../helpers";
 
 @injectable()
 export class TransactionRepository {
@@ -38,11 +40,36 @@ export class TransactionRepository {
     }
   }
 
-  async getTransactions(userId: Types.ObjectId) {
+  async getTransactionHistory(
+    userId: Types.ObjectId,
+    page: number,
+    limit: number,
+  ) {
     try {
-      const { _id } = await this._walletRepository.getWalletInfo(userId);
+      const walletId = await this._walletRepository.getWalletInfo(userId);
 
-      return await Transaction.find({ wallet: _id }).sort({ createdAt: -1 });
+      const skip = (page - 1) * limit;
+      const transactions = await Transaction.find({ wallet: walletId })
+        .skip(skip)
+        .limit(limit)
+        .lean()
+        .sort({ createdAt: -1 })
+        .select({
+          amount: 1,
+          date: 1,
+          status: 1,
+          type: 1,
+          amount_credited: 1,
+          amount_debited: 1,
+        });
+
+      if (!transactions.length) {
+        throw new badRequestException("No transactions found");
+      }
+
+      const total = await Transaction.countDocuments({ wallet: walletId });
+
+      return { transactions, total };
     } catch (err: any) {
       console.error("Error getting transactions:", err);
       throw err;
@@ -51,7 +78,23 @@ export class TransactionRepository {
 
   async getTransactionInfo(transactionId: Types.ObjectId) {
     try {
-      return await Transaction.findById({ _id: transactionId });
+      const transactionInfo = await Transaction.findById({ _id: transactionId })
+        .lean()
+        .select({
+          wallet: 1,
+          from: 1,
+          recipient_name: 1,
+          recipient_bank: 1,
+          date: 1,
+          amount_credited: 1,
+          reference: 1,
+          type: 1,
+          status: 1,
+          description: 1,
+          createdAt: 1,
+        });
+
+      return transactionInfo;
     } catch (err: any) {
       console.error("Error getting transaction info:", err);
       throw err;

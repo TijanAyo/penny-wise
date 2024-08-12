@@ -74,3 +74,24 @@ export const ValidateMiddleware = async (
     });
   }
 };
+
+export const validateQueryParams = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const validParams = ["page", "limit"];
+  const queryKeys = Object.keys(req.query);
+
+  const hasInvalidParams = queryKeys.some((key) => !validParams.includes(key));
+
+  if (hasInvalidParams) {
+    return res.status(400).json({
+      data: null,
+      message: 'Invalid query parameters. Only "page" and "limit" are allowed.',
+      success: false,
+    });
+  }
+
+  next();
+};
