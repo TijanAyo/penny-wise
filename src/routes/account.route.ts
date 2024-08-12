@@ -39,13 +39,19 @@ router.post(
 router.patch(
   "/update-profile-info",
   AuthMiddleWare,
-  accountController.updateProfile.bind(accountController),
+  accountController.updateProfileInformation.bind(accountController),
 );
 
 router.patch(
   "/security/change-password",
   AuthMiddleWare,
   accountController.changePassword.bind(accountController),
+);
+
+router.get(
+  "/profile",
+  AuthMiddleWare,
+  accountController.viewProfileInformation.bind(accountController),
 );
 
 router.post(

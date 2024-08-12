@@ -88,13 +88,23 @@ export class AccountController {
     }
   }
 
-  public async updateProfile(req: Request, res: Response) {
+  public async updateProfileInformation(req: Request, res: Response) {
     try {
       const { _id } = req.user;
-      const result = await this._accountService.updateProfileInfo(
+      const result = await this._accountService.updateProfileInformation(
         _id,
         req.body,
       );
+      return res.status(200).json(result);
+    } catch (error: any) {
+      return await this._errorHandler.handleCustomError(error, res);
+    }
+  }
+
+  public async viewProfileInformation(req: Request, res: Response) {
+    try {
+      const { _id } = req.user;
+      const result = await this._accountService.viewProfileInformation(_id);
       return res.status(200).json(result);
     } catch (error: any) {
       return await this._errorHandler.handleCustomError(error, res);

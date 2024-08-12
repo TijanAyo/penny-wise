@@ -405,7 +405,7 @@ export class AccountService {
     }
   }
 
-  public async updateProfileInfo(
+  public async updateProfileInformation(
     userId: Types.ObjectId,
     payload: updateProfileInfoPayload,
   ) {
@@ -457,6 +457,22 @@ export class AccountService {
       if (error instanceof ZodError) {
         throw new validationException(error.errors[0].message);
       }
+      throw error;
+    }
+  }
+
+  public async viewProfileInformation(userId: Types.ObjectId) {
+    try {
+      const user = await this._userRepository.findByUserId(userId);
+
+      const profileInfo = await this._userRepository.viewProfileInfo(user._id);
+
+      return AppResponse(
+        profileInfo,
+        "Profile information retrieved successfully",
+      );
+    } catch (error: any) {
+      console.error("Error viewing profile information", error);
       throw error;
     }
   }

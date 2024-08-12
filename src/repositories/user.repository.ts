@@ -4,6 +4,7 @@ import { badRequestException } from "../helpers";
 import redisClient from "../config/redis";
 import { cryptHash } from "../utils";
 import { Types } from "mongoose";
+import * as _ from "lodash";
 
 @injectable()
 export class UserRepository {
@@ -194,6 +195,31 @@ export class UserRepository {
       return;
     } catch (err: any) {
       console.error("Error marking otp has valid");
+      throw err;
+    }
+  }
+
+  async viewProfileInfo(userId: Types.ObjectId) {
+    try {
+      const profileInfo = await User.findOne({ _id: userId }).lean();
+
+      if (!profileInfo) {
+        throw new badRequestException("No profile info found");
+      }
+
+      const omittedInfo = _.omit(profileInfo, [
+        "isEmailVerified",
+        "password",
+        "isPinSet",
+        "pin",
+        "pinSetAt",
+        "isSettlementAccountSet",
+        "isSettlementAccountSet",
+        "usernameUpdatedAt",
+      ]);
+      return omittedInfo;
+    } catch (err: any) {
+      console.error("Error fetching profile info", err);
       throw err;
     }
   }
