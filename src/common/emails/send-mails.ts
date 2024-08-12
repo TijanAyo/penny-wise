@@ -49,6 +49,7 @@ export class SendMails {
     const emailBody = renderTemplate("alert", { data });
 
     console.log("email from sendAlertMail:", email);
+    console.log("data from sendAlertMail:", data);
 
     await mailer(email, emailSubject, emailBody);
   }
