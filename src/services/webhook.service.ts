@@ -162,7 +162,7 @@ export class WebHookService {
       await this._emailQueueService.sendEmailQueue({
         type: "alert",
         payload: {
-          emailForQueue,
+          email: emailForQueue,
           name,
           alert_type,
           account_name,
