@@ -1,7 +1,7 @@
 export const AppResponse = (
   data: any | null,
   message: string,
-  success: boolean,
+  success: boolean = true,
 ) => {
   return {
     data,
