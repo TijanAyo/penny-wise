@@ -18,37 +18,37 @@
   </head>
   <body>
     <div class="container">
-      <h1>Dear {{data.name}},</h1>
+      <h1>Dear {{name}},</h1>
       <p>
         We wish to inform you that a
-        {{data.alert_type}}
+        {{alert_type}}
         transaction recently occurred on your account.
       </p>
 
       <p>Please find below details of the transaction:</p>
 
-      <h2>Transaction Details - {{data.alert_type}}</h2>
+      <h2>Transaction Details - {{alert_type}}</h2>
 
       <table>
         <tr>
           <th>Account Name</th>
-          <td>{{data.account_name}}</td>
+          <td>{{account_name}}</td>
         </tr>
         <tr>
           <th>Description</th>
-          <td>{{data.description}}</td>
+          <td>{{description}}</td>
         </tr>
         <tr>
           <th>Reference Number</th>
-          <td>{{data.reference_number}}</td>
+          <td>{{reference_number}}</td>
         </tr>
         <tr>
           <th>Transaction Amount</th>
-          <td>{{data.transaction_amount}}</td>
+          <td>{{transaction_amount}}</td>
         </tr>
         <tr>
           <th>Transaction Date & Time</th>
-          <td>{{data.transaction_date_time}}</td>
+          <td>{{transaction_date_time}}</td>
         </tr>
       </table>
       <div class="footer">

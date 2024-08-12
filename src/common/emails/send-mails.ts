@@ -44,12 +44,29 @@ export class SendMails {
     await mailer(email, emailSubject, emailBody);
   }
 
-  public async sendAlertMail(email: string, data: alertPayload) {
+  public async sendAlertMail(
+    email: string,
+    name: string,
+    alert_type: string,
+    account_name: string,
+    description: string,
+    reference_number: string,
+    transaction_amount: string,
+    transaction_date: string,
+  ) {
     const emailSubject: string = `PennyWise Alert`;
-    const emailBody = renderTemplate("alert", { data });
+    const emailBody = renderTemplate("alert", {
+      name,
+      alert_type,
+      account_name,
+      description,
+      reference_number,
+      transaction_amount,
+      transaction_date,
+    });
 
     console.log("email from sendAlertMail:", email);
-    console.log("data from sendAlertMail:", data);
+    console.log("data from sendAlertMail:", name);
 
     await mailer(email, emailSubject, emailBody);
   }

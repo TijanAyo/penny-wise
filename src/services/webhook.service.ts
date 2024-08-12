@@ -152,8 +152,14 @@ export class WebHookService {
       await this._emailQueueService.sendEmailQueue({
         type: "alert",
         payload: {
-          emailForQueue,
-          queueData,
+          email: emailForQueue,
+          name: user.firstName,
+          alert_type: "Credit",
+          account_name: newTransaction.recipient_name,
+          description: newTransaction.description,
+          reference_number: newTransaction.reference,
+          transaction_amount: newTransaction.amount_credited,
+          transaction_date: formatDate(new Date()),
         },
       });
 
