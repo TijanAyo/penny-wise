@@ -1,7 +1,5 @@
 # Pennywise - A jeetseed inspired savings API
 
-# Pennywise
-
 ## Introduction
 
 Pennywise is a simple savings application inspired by my first saving platform, [JetSeed](https://jetseed.com).
