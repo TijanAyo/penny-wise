@@ -23,6 +23,7 @@ It allows users to manage their finances easily and securely.
 - **Database**: MongoDB
 - **Queue**: Redis
 - **Design Principles**: Object-Oriented Programming (OOP), Dependency Injection
+- **Payment Provider**: Flutterwave
 
 ## Documentation
 

@@ -119,12 +119,6 @@ export class WebHookService {
         description: `Transfer to wallet from bank account ${data.data.meta.originatoraccountnumber} - ${data.data.meta.originatorname}`,
       };
 
-      /* const { _id } = await this._walletRepository.getWalletInfo(user._id);
-      const transaction = await this._transactionService.createTransaction(
-        newTransaction,
-        _id,
-      ); */
-
       const transaction = await this._transactionRepository.generateWalletTrx(
         user._id,
         newTransaction,
@@ -232,12 +226,6 @@ export class WebHookService {
         description: `Withdrawal from wallet to bank account`,
       };
 
-      /* const { _id } = await this._walletRepository.getWalletInfo(user._id);
-      const transaction = await this._transactionService.createTransaction(
-        newTransaction,
-        _id,
-      ); */
-
       const transaction = await this._transactionRepository.generateWalletTrx(
         user._id,
         newTransaction,
@@ -267,11 +255,27 @@ export class WebHookService {
       console.log("emailForQueue", emailForQueue);
       console.log("queueData", queueData);
 
+      const {
+        name,
+        alert_type,
+        account_name,
+        description,
+        reference_number,
+        transaction_amount,
+        transaction_date,
+      } = queueData;
+
       await this._emailQueueService.sendEmailQueue({
         type: "alert",
         payload: {
-          emailForQueue,
-          queueData,
+          email: emailForQueue,
+          name,
+          alert_type,
+          account_name,
+          description,
+          reference_number,
+          transaction_amount,
+          transaction_date,
         },
       });
 

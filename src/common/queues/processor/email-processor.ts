@@ -1,6 +1,5 @@
 import { injectable } from "tsyringe";
 import { SendMails } from "../../emails";
-import { alertPayload } from "../../interface";
 
 @injectable()
 export class EmailProcessor {
