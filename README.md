@@ -27,7 +27,7 @@ It allows users to manage their finances easily and securely.
 
 ## Documentation
 
-Pennywise utilizes Postman for API documentation. You can access the Postman collection link to your Postman collection [here](https://example.com) to learn about the available API endpoints and their functionalities.
+Pennywise utilizes Postman for API documentation. You can access the Postman collection link to your Postman collection [here](https://documenter.getpostman.com/view/19118409/2sA3s6E9GL) to learn about the available API endpoints and their functionalities.
 
 ## Installation
 
