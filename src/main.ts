@@ -37,9 +37,11 @@ app.use("/api/account", accountRoute);
 app.use("/api/transaction", transactionRoute);
 
 app.get("/", (_req: Request, res: Response) => {
-  return res
-    .status(200)
-    .json({ data: null, message: "Server up and running 🚀🚀", success: true });
+  return res.status(200).json({
+    data: null,
+    message: "PENNYWISE - JETSEED INSPIRED SAVINGS PLATFORM 🚀",
+    success: true,
+  });
 });
 
 app.get("/health", (_req: Request, res: Response) => {
