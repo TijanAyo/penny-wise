@@ -39,7 +39,7 @@ app.use("/api/transaction", transactionRoute);
 app.get("/", (_req: Request, res: Response) => {
   return res.status(200).json({
     data: null,
-    message: "PENNYWISE - JETSEED INSPIRED SAVINGS PLATFORM 🚀",
+    message: "PENNYWISE 🚀",
     success: true,
   });
 });
