@@ -1,7 +1,7 @@
 {
   "name": "penny-wise",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "./dist/main.js",
   "repository": "https://github.com/TijanAyo/penny-wise.git",
   "author": "TijanAyo <ayomidetijani6@gmail.com>",
   "license": "MIT",
@@ -9,8 +9,8 @@
     "build": "tsc && cp -r ./src/common/emails/templates ./dist/common/emails",
     "format": "prettier --write \"**/*.ts\"",
     "postinstall": "npm run build",
-    "start": "npm run build && node ./dist/server.js",
-    "start:dev": "nodemon ./src/server.ts",
+    "start": "npm run build && node ./dist/main.js",
+    "start:dev": "nodemon ./src/main.ts",
     "prepare": "husky"
   },
   "lint-staged": {
