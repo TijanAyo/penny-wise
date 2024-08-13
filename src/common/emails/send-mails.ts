@@ -64,9 +64,6 @@ export class SendMails {
       transaction_date,
     });
 
-    console.log("email from sendAlertMail:", email);
-    console.log("data from sendAlertMail:", name);
-
     await mailer(email, emailSubject, emailBody);
   }
 }

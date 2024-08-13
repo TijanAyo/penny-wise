@@ -87,9 +87,6 @@ export class EmailProcessor {
         transaction_date,
       } = job;
 
-      console.log("alertWorkerEmail:", email);
-      console.log("alertWorkerData:", name);
-
       await this.mailService.sendAlertMail(
         email,
         name,

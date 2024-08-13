@@ -27,7 +27,7 @@ router.post(
 router.post(
   "/set-settlement-account",
   AuthMiddleWare,
-  accountController.setSettlementAccount.bind(accountController),
+  accountController.addSettlementAccount.bind(accountController),
 );
 
 router.post(

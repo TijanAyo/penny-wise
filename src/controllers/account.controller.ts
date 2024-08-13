@@ -46,10 +46,10 @@ export class AccountController {
     }
   }
 
-  public async setSettlementAccount(req: Request, res: Response) {
+  public async addSettlementAccount(req: Request, res: Response) {
     try {
       const { _id } = req.user;
-      const result = await this._accountService.setSettlementAccount(
+      const result = await this._accountService.addSettlementAccount(
         _id,
         req.body,
       );

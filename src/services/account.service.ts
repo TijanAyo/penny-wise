@@ -172,7 +172,7 @@ export class AccountService {
     }
   }
 
-  public async setSettlementAccount(
+  public async addSettlementAccount(
     userId: Types.ObjectId,
     payload: setSettlementAccountPayload,
   ) {
@@ -451,7 +451,7 @@ export class AccountService {
 
       await this._userRepository.updateFieldInDB(user.emailAddress, updateData);
 
-      return AppResponse(null, "Updated successfully", true);
+      return AppResponse(null, "Updated successfully");
     } catch (error: any) {
       console.log("updateProfileError=>", error);
       if (error instanceof ZodError) {

@@ -128,7 +128,6 @@ export class WebHookService {
         throw new badRequestException("Transaction could not be updated");
       }
 
-      // TODO: Send credit alert email notification
       const emailForQueue = user.emailAddress;
       const queueData = {
         name: user.firstName,
@@ -139,9 +138,6 @@ export class WebHookService {
         transaction_amount: newTransaction.amount_credited,
         transaction_date: formatDate(new Date()),
       };
-
-      console.log("emailForQueue", emailForQueue);
-      console.log("queueData", queueData);
 
       const {
         name,
@@ -240,7 +236,6 @@ export class WebHookService {
         );
       }
 
-      // TODO: send debit alert email notification on withdrawal
       const emailForQueue = user.emailAddress;
       const queueData = {
         name: user.firstName,
@@ -251,9 +246,6 @@ export class WebHookService {
         transaction_amount: newTransaction.amount_debited,
         transaction_date: formatDate(new Date()),
       };
-
-      console.log("emailForQueue", emailForQueue);
-      console.log("queueData", queueData);
 
       const {
         name,
