@@ -1,12 +1,19 @@
 import { injectable } from "tsyringe";
 import { Itransaction, transactionData } from "../common/interface";
-import { TransactionRepository } from "../repositories";
+import { TransactionRepository, WalletRepository } from "../repositories";
 import mongoose, { Types } from "mongoose";
-import { AppResponse, badRequestException } from "../helpers";
+import {
+  AppResponse,
+  badRequestException,
+  unauthorizedException,
+} from "../helpers";
 
 @injectable()
 export class TransactionService {
-  constructor(private readonly _transactionRepository: TransactionRepository) {}
+  constructor(
+    private readonly _transactionRepository: TransactionRepository,
+    private readonly _walletRepository: WalletRepository,
+  ) {}
 
   public async createTransaction(
     payload: transactionData,
@@ -61,17 +68,32 @@ export class TransactionService {
     }
   }
 
-  public async viewTransactionDetails(transactionId: string) {
+  public async viewTransactionDetails(
+    userId: Types.ObjectId,
+    transactionId: string,
+  ) {
     try {
+      const wallet = await this._walletRepository.getWalletInfo(userId);
       const transaction = await this._transactionRepository.getTransactionInfo(
         new mongoose.Types.ObjectId(transactionId),
       );
+
+      console.log("WALLET:", wallet._id);
+      console.log("TransactionWalletId:", transaction.wallet._id);
+
       if (!transaction) {
         console.log("TransactionId could not be found");
         throw new badRequestException(
-          "An error occurred while fetching transaction information",
+          "Invalid transaction ID, kinldy check input and try again",
         );
       }
+
+      if (transaction.wallet.toString() !== wallet._id.toString()) {
+        throw new unauthorizedException(
+          "You are not authorized to view this transaction",
+        );
+      }
+
       return AppResponse(
         transaction,
         "Transaction information fetched successfully",

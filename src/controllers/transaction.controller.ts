@@ -30,9 +30,12 @@ export class TransactionController {
 
   public async getTransactionInfo(req: Request, res: Response) {
     try {
+      const { _id } = req.user;
       const { transactionId } = req.params;
-      const result =
-        await this._transactionService.viewTransactionDetails(transactionId);
+      const result = await this._transactionService.viewTransactionDetails(
+        _id,
+        transactionId,
+      );
       return res.status(200).json(result);
     } catch (error: any) {
       return await this._errorHandler.handleCustomError(error, res);

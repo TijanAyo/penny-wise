@@ -79,7 +79,7 @@ export class TransactionRepository {
   async getTransactionInfo(transactionId: Types.ObjectId) {
     try {
       const transactionInfo = await Transaction.findById({ _id: transactionId })
-        .lean()
+
         .select({
           wallet: 1,
           from: 1,
