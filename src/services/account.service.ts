@@ -38,6 +38,7 @@ import {
 } from "../validations";
 import { UserRepository, WalletRepository } from "../repositories";
 import { EmailQueue } from "../common/queues";
+import { FLUTTERWAVE_CLIENT } from "../common/flutterwave";
 
 @injectable()
 export class AccountService {
@@ -47,24 +48,28 @@ export class AccountService {
     private readonly _emailQueueService: EmailQueue,
   ) {}
 
-  private readonly FLUTTERWAVE_BASE_URL = `https://api.flutterwave.com/v3`;
+  /* private readonly FLUTTERWAVE_BASE_URL = `https://api.flutterwave.com/v3`;
   private readonly FLUTTERWAVE_HEADER_CONFIG = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${environment.FLUTTERWAVE_SECRET_KEY}`,
-  };
+  }; */
   private readonly NOW = new Date();
 
   private async sendRequestToFlutterwave(
     data: any,
   ): Promise<VirtualAccountResponse> {
     try {
-      const response = await axios.post(
+      const response = await FLUTTERWAVE_CLIENT.post(
+        "/virtual-account-numbers",
+        data,
+      );
+      /*  const response = await axios.post(
         `${this.FLUTTERWAVE_BASE_URL}/virtual-account-numbers`,
         data,
         {
           headers: this.FLUTTERWAVE_HEADER_CONFIG,
         },
-      );
+      ); */
 
       if (!response || response.status !== 200) {
         throw new badRequestException(
@@ -122,10 +127,12 @@ export class AccountService {
 
         this._userRepository.updateFieldInDB(emailAddress, {
           BVN: hashedBVN,
+          isWalletSet: true,
+          walletSetAt: this.NOW,
         }),
       ]);
 
-      return AppResponse(result, "Virtual account created", true);
+      return AppResponse(result, "Virtual account created successfully");
     } catch (error: any) {
       if (error instanceof ZodError) {
         throw new validationException(error.message);
@@ -469,7 +476,7 @@ export class AccountService {
 
       return AppResponse(
         profileInfo,
-        "Profile information retrieved successfully",
+        "Profile information successfully retrieved",
       );
     } catch (error: any) {
       console.error("Error viewing profile information", error);

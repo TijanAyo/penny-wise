@@ -50,6 +50,8 @@ const userSchema: Schema<Iuser> = new Schema<Iuser>({
     country: { type: String, trim: true },
     state: { type: String, trim: true },
   },
+  isWalletSet: { type: Boolean, default: false, required: false },
+  walletSetAt: { type: Date, required: false },
 });
 
 const User = mongoose.model<Iuser>("User", userSchema);

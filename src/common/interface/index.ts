@@ -1,4 +1,5 @@
 import { Types } from "mongoose";
+import { boolean } from "zod";
 
 interface Address {
   streetAddress: string;
@@ -49,6 +50,8 @@ export interface Iuser extends Document {
   address: Address;
   nextOfKin: NextOfKin;
   wallet: Iwallet;
+  isWalletSet: boolean;
+  walletSetAt: Date;
 }
 
 export interface registerPayload {

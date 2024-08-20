@@ -26,9 +26,22 @@ export class WalletService {
 
   public async getWalletInfo(userId: Types.ObjectId) {
     try {
-      const walletInfo = await this._walletRepository.getWalletInfo(userId);
+      const [user, walletInfo] = await Promise.all([
+        await this._userRepository.findByUserId(userId),
+        await this._walletRepository.getWalletInfo(userId),
+      ]);
+
+      /* const user = await this._userRepository.findByUserId(userId);
+      const walletInfo = await this._walletRepository.getWalletInfo(userId); 
+      */
+
+      if (!user.isWalletSet) {
+        throw new badRequestException(
+          "Wallet has not been created for this account",
+        );
+      }
       if (!walletInfo) {
-        throw new badRequestException("Wallet information not found");
+        throw new badRequestException("Wallet not found");
       }
       return AppResponse(
         walletInfo,
