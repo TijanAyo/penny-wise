@@ -14,6 +14,7 @@ import {
   accountRoute,
   transactionRoute,
 } from "./routes";
+import { FLUTTERWAVE_CLIENT } from "./common/flutterwave";
 
 const app: Express = express();
 const PORT = Number(environment.PORT) || 5050;
@@ -50,6 +51,21 @@ app.get("/health", (_req: Request, res: Response) => {
     message: "Server is healthy and running smoothly 🏃🏾🏃🏾",
     success: true,
   });
+});
+
+// Get bank codes
+app.get("/get-banks", async (req: Request, res: Response) => {
+  try {
+    const response = await FLUTTERWAVE_CLIENT.get("/banks/NG");
+    return res.status(200).json(response.data);
+  } catch (err) {
+    console.error("Error fetching banks", err);
+    return res.status(400).json({
+      data: null,
+      message: "Failed to fetch banks",
+      success: false,
+    });
+  }
 });
 
 // 404 Route
