@@ -61,3 +61,7 @@ Follow these steps to set up the project locally:
    # Runs the application in dev mode
    yarn start:dev
    ```
+
+## Disclaimer
+
+Please note that this server is hosted on a free instance, which means it will automatically spin down after 15 minutes of inactivity. To ensure the server is active, kindly hit the health endpoint before making any other requests. This will help confirm that the server is up and running.
