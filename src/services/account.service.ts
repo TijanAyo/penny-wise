@@ -48,11 +48,6 @@ export class AccountService {
     private readonly _emailQueueService: EmailQueue,
   ) {}
 
-  /* private readonly FLUTTERWAVE_BASE_URL = `https://api.flutterwave.com/v3`;
-  private readonly FLUTTERWAVE_HEADER_CONFIG = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${environment.FLUTTERWAVE_SECRET_KEY}`,
-  }; */
   private readonly NOW = new Date();
 
   private async sendRequestToFlutterwave(
@@ -63,13 +58,6 @@ export class AccountService {
         "/virtual-account-numbers",
         data,
       );
-      /*  const response = await axios.post(
-        `${this.FLUTTERWAVE_BASE_URL}/virtual-account-numbers`,
-        data,
-        {
-          headers: this.FLUTTERWAVE_HEADER_CONFIG,
-        },
-      ); */
 
       if (!response || response.status !== 200) {
         throw new badRequestException(
@@ -88,6 +76,11 @@ export class AccountService {
     userId: Types.ObjectId,
     payload: createVirtualAccountNumberPayload,
   ) {
+    const user = await this._userRepository.findByUserId(userId);
+    if (user.isWalletSet)
+      throw new badRequestException(
+        "Virtual account already created for this account, check wallet to view more infor",
+      );
     try {
       const { bvn } =
         await createVirtualAccountNumberSchema.parseAsync(payload);
