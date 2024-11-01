@@ -106,7 +106,6 @@ export class AuthService {
         password,
       );
       if (isPanicPasswordPassed) {
-        console.log("Got here - panic password is set");
         const isPasswordValid = await compareHash(password, user.panicPassword);
         if (!isPasswordValid) {
           console.log("Got here - panic password is not valid");
@@ -116,7 +115,6 @@ export class AuthService {
         }
 
         if (!user.isPanicModeActive) {
-          console.log("I REACHED HERE");
           await this._userRepository.updateFieldInDB(user.emailAddress, {
             isPanicModeActive: true,
             panicModeActiveAt: formatDate(this.NOW),
