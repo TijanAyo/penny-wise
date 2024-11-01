@@ -6,7 +6,13 @@ import express, { Express, Request, Response } from "express";
 import morgan from "morgan";
 import cors from "cors";
 
-import { connectDB, isLocal, allowedOrigins, environment } from "./config";
+import {
+  connectDB,
+  getServerMessage,
+  allowedOrigins,
+  env,
+  environment,
+} from "./config";
 import {
   authRoute,
   walletRoute,
@@ -39,15 +45,15 @@ app.use("/api/transaction", transactionRoute);
 
 app.get("/", (_req: Request, res: Response) => {
   return res.status(200).json({
-    data: null,
-    message: "PENNYWISE 🚀",
+    data: undefined,
+    message: "PENNYWISE 🚀 - The Jetseed savings API",
     success: true,
   });
 });
 
 app.get("/health", (_req: Request, res: Response) => {
   return res.status(200).json({
-    data: null,
+    data: undefined,
     message: "Server is healthy and running smoothly 🏃🏾🏃🏾",
     success: true,
   });
@@ -61,7 +67,7 @@ app.get("/get-banks", async (req: Request, res: Response) => {
   } catch (err) {
     console.error("Error fetching banks", err);
     return res.status(400).json({
-      data: null,
+      data: undefined,
       message: "Failed to fetch banks",
       success: false,
     });
@@ -71,7 +77,7 @@ app.get("/get-banks", async (req: Request, res: Response) => {
 // 404 Route
 app.all("*", (_req: Request, res: Response) => {
   return res.status(404).json({
-    data: "NOT_FOUND_ERROR",
+    data: undefined,
     message: "Route does not exist, check provided endpoint and try again",
     success: false,
   });
@@ -79,12 +85,12 @@ app.all("*", (_req: Request, res: Response) => {
 
 const startServer = async () => {
   try {
-    // DB Config
+    // connect to DB
     await connectDB();
+
+    // start server
     app.listen(PORT, () => {
-      isLocal
-        ? console.info(`Server running on http://localhost:${PORT}`)
-        : console.info(`Server running on prod`);
+      console.info(getServerMessage(env, PORT));
     });
   } catch (err: any) {
     console.error(`Failed to connect to the database: ${err.message}`);
