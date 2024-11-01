@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
-const isLocal = String(process.env.NODE_ENV) === "local";
+const isLocal = String(process.env.NODE_ENV) === "staging";
 const url = isLocal
-  ? String(process.env.LOCAL_MONGO_URI)
-  : String(process.env.MONGO_URI) || "";
+  ? String(process.env.STAGING_MONGO_URI)
+  : String(process.env.PRODUCTION_MONGO_URI) || "";
 
 const connectDB = async (): Promise<void> => {
   try {

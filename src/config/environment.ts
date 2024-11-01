@@ -4,8 +4,9 @@ import { z } from "zod";
 
 const environmentSchema = z.object({
   NODE_ENV: z.string(),
-  MONGO_URI: z.string(),
   LOCAL_MONGO_URI: z.string(),
+  PRODUCTION_MONGO_URI: z.string(),
+  STAGING_MONGO_URI: z.string(),
   PORT: z.string(),
   BASE_URL: z.string(),
   SALT_ROUND: z.string(),

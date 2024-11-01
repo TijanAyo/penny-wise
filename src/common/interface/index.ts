@@ -49,6 +49,12 @@ export interface Iuser extends Document {
   address: Address;
   nextOfKin: NextOfKin;
   wallet: Iwallet;
+  isAccountSuspended: boolean;
+  panicPassword: string;
+  isPanicPasswordSet: boolean;
+  panicPasswordSetAt: Date;
+  isPanicModeActive: boolean;
+  panicModeActiveAt: Date;
 }
 
 export interface registerPayload {
@@ -81,6 +87,7 @@ export interface Iwallet extends Document {
   account_number: string;
   account_bank: string;
   balance: number;
+  panicModeBalance: number;
   user: Iuser;
   transactions: Itransaction;
 }
@@ -224,4 +231,9 @@ export interface withdrawPayload {
   amount: number;
   pin: string;
   otpCode: string;
+}
+
+export interface setPanicPasswordPayload {
+  password: string;
+  confirmPassword: string;
 }

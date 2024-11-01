@@ -59,4 +59,10 @@ router.post(
   accountController.createOTP.bind(accountController),
 );
 
+router.post(
+  "/panic-password/set",
+  AuthMiddleWare,
+  accountController.setPanicPassword.bind(accountController),
+);
+
 export { router as accountRoute };

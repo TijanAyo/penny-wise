@@ -43,9 +43,10 @@ export class WalletRepository {
 
   async getWalletInfo(userId: Types.ObjectId) {
     try {
-      return await Wallet.findOne({ user: userId })
-        .populate("user", "firstName lastName emailAddress username")
-        .lean();
+      return await Wallet.findOne({ user: userId }).populate(
+        "user",
+        "firstName lastName emailAddress username",
+      );
     } catch (err: any) {
       console.error("Error getting user wallet info:", err);
       throw err;

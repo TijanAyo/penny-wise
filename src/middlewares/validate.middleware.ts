@@ -95,3 +95,37 @@ export const validateQueryParams = async (
 
   next();
 };
+
+export const validatePayment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const user = req.user;
+  const { balance } = await Wallet.findOne({ user: user._id });
+  const { amount } = req.body;
+  const defaultPercentage = 2;
+  const allowedAmount = (balance * defaultPercentage) / 100;
+
+  try {
+    const isPanicModeActive = user.isPanicModeActive;
+    if (isPanicModeActive) {
+      if (amount > allowedAmount) {
+        return res.status(400).json({
+          data: null,
+          message: "Amount exceeds maximum withdrawal limit",
+          success: false,
+        });
+      }
+    }
+
+    next();
+  } catch (error: any) {
+    console.error("Error in validatePayment middleware:", error);
+    return res.status(500).json({
+      data: null,
+      message: "Internal server error",
+      success: false,
+    });
+  }
+};

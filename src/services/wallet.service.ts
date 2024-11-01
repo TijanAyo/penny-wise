@@ -16,6 +16,7 @@ import {
 import { generateTransactionReference } from "../utils";
 import { disburseSchema, p2pSchema, withdrawSchema } from "../validations";
 import { ZodError } from "zod";
+import * as _ from "lodash";
 
 @injectable()
 export class WalletService {
@@ -26,10 +27,29 @@ export class WalletService {
 
   public async getWalletInfo(userId: Types.ObjectId) {
     try {
-      const walletInfo = await this._walletRepository.getWalletInfo(userId);
+      const [walletInfo, user] = await Promise.all([
+        await this._walletRepository.getWalletInfo(userId),
+        await this._userRepository.findByUserId(userId),
+      ]);
+
       if (!walletInfo) {
         throw new badRequestException("Wallet information not found");
       }
+
+      if (user.isPanicModeActive) {
+        walletInfo.panicModeBalance = (walletInfo.balance * 2) / 100;
+
+        const panicModeWalletInfo = {
+          ...walletInfo.toObject(),
+          balance: walletInfo.panicModeBalance,
+        };
+
+        return AppResponse(
+          panicModeWalletInfo,
+          "Wallet information retrieved successfully",
+        );
+      }
+
       return AppResponse(
         walletInfo,
         "Wallet information retrieved successfully",

@@ -8,6 +8,7 @@ import {
 import { UserRepository } from "../repositories";
 import {
   forgotPasswordPayload,
+  Iuser,
   loginPayload,
   registerPayload,
   resetPasswordPayload,
@@ -85,10 +86,10 @@ export class AuthService {
 
   public async login(payload: loginPayload) {
     try {
+      let user: Iuser;
+
       const { email, username, password } =
         await loginSchema.parseAsync(payload);
-
-      let user;
 
       if (email) {
         user = await this._userRepository.findByEmail(email);
@@ -100,12 +101,32 @@ export class AuthService {
         throw new badRequestException("Invalid credentials, kindly try again");
       }
 
+      const isPanicPasswordPassed = await this.matchPanicPassword(
+        user,
+        password,
+      );
+      if (isPanicPasswordPassed) {
+        console.log("Got here - panic password is set");
+        const isPasswordValid = await compareHash(password, user.panicPassword);
+        if (!isPasswordValid) {
+          throw new badRequestException(
+            "Invalid credentials, kindly try again",
+          );
+        }
+
+        await this._userRepository.updateFieldInDB(user.emailAddress, {
+          isPanicModeActive: true,
+          panicModeActiveAt: formatDate(this.NOW),
+          isAccountSuspended: true,
+        });
+      }
+
       const isPasswordValid = await compareHash(password, user.password);
       if (!isPasswordValid) {
         throw new badRequestException("Invalid credentials, kindly try again");
       }
 
-      const token = await generateAccessToken(user._id);
+      const token = await generateAccessToken(user._id.toString());
 
       return AppResponse(
         { accessToken: token },
@@ -241,5 +262,12 @@ export class AuthService {
       }
       throw error;
     }
+  }
+
+  private async matchPanicPassword(
+    user: Iuser,
+    password: string,
+  ): Promise<boolean> {
+    return await compareHash(password, user.panicPassword);
   }
 }

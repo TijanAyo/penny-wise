@@ -4,6 +4,7 @@ import {
   createOtpPayload,
   createVirtualAccountNumberPayload,
   NextOfKin,
+  setPanicPasswordPayload,
   setSettlementAccountPayload,
   setTransactionPinPayload,
   setUsernamePayload,
@@ -31,6 +32,7 @@ import {
   changePasswordSchema,
   createOtpSchema,
   createVirtualAccountNumberSchema,
+  setPanicPasswordSchema,
   setSettlementAccountSchema,
   setTransactionPinSchema,
   setUsernameSchema,
@@ -473,6 +475,53 @@ export class AccountService {
       );
     } catch (error: any) {
       console.error("Error viewing profile information", error);
+      throw error;
+    }
+  }
+
+  public async setPanicPassword(
+    userId: Types.ObjectId,
+    payload: setPanicPasswordPayload,
+  ) {
+    try {
+      const user = await this._userRepository.findByUserId(userId);
+
+      if (user.isPanicPasswordSet) {
+        throw new badRequestException(
+          "Panic password has already been set, no futher action is required",
+        );
+      }
+
+      const { password, confirmPassword } =
+        await setPanicPasswordSchema.parseAsync(payload);
+
+      if (password !== confirmPassword) {
+        throw new badRequestException("Password does not match");
+      }
+
+      const doesPasswordMatch = await compareHash(password, user.password);
+      if (doesPasswordMatch) {
+        throw new badRequestException(
+          "Password cannot be the same as your current password",
+        );
+      }
+
+      const hashedPassword = await hashPayload(password);
+
+      await this._userRepository.updateFieldInDB(user.emailAddress, {
+        panicPassword: hashedPassword,
+        isPanicPasswordSet: true,
+        panicPasswordSetAt: formatDate(this.NOW),
+      });
+
+      return AppResponse(undefined, "Panic password set successfully", true);
+    } catch (error: any) {
+      console.log("setPanicPasswordError: ", error);
+
+      if (error instanceof ZodError) {
+        throw new validationException(error.errors[0].message);
+      }
+
       throw error;
     }
   }

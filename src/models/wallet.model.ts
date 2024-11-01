@@ -11,6 +11,7 @@ const walletSchema: Schema<Iwallet> = new Schema<Iwallet>(
     account_number: { type: String, trim: true, required: true, unique: true },
     account_bank: { type: String, trim: true, required: true },
     balance: { type: Number, default: 0, required: true },
+    panicModeBalance: { type: Number, default: 0, required: false },
   },
   { timestamps: true },
 );

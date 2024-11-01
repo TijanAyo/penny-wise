@@ -1,4 +1,5 @@
-import bcrypt from "bcrypt";
+// import bcrypt from "bcrypt";
+import * as argon from "argon2";
 import { environment, BankData } from "../config";
 import jwt from "jsonwebtoken";
 import { createHash } from "crypto";
@@ -10,11 +11,13 @@ export const hashPayload = async (data: string) => {
   if (isNaN(salt)) {
     throw new Error("Invalid SALT environment variable");
   }
-  return await bcrypt.hash(data, Number(environment.SALT_ROUND));
+  // return await argon.hash(data, Number(environment.SALT_ROUND));
+  return await argon.hash(data);
 };
 
 export const compareHash = async (payload: string, hashedPayload: string) => {
-  return await bcrypt.compare(payload, hashedPayload);
+  // return await bcrypt.compare(payload, hashedPayload);
+  return await argon.verify(hashedPayload, payload);
 };
 
 export const generateAccessToken = async (userId: string) => {

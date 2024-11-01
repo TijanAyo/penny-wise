@@ -70,3 +70,8 @@ export const updateProfileInfoSchema = z.object({
     })
     .optional(),
 });
+
+export const setPanicPasswordSchema = z.object({
+  password: z.string().trim().max(20),
+  confirmPassword: z.string().trim().max(20),
+});

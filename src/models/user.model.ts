@@ -50,6 +50,12 @@ const userSchema: Schema<Iuser> = new Schema<Iuser>({
     country: { type: String, trim: true },
     state: { type: String, trim: true },
   },
+  isAccountSuspended: { type: Boolean, default: false },
+  panicPassword: { type: String, required: false },
+  isPanicPasswordSet: { type: Boolean, default: false },
+  panicPasswordSetAt: { type: Date, required: false },
+  isPanicModeActive: { type: Boolean, default: false },
+  panicModeActiveAt: { type: Date, required: false },
 });
 
 const User = mongoose.model<Iuser>("User", userSchema);
