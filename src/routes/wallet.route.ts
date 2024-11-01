@@ -1,6 +1,10 @@
 import express, { Router } from "express";
 import { WalletController } from "../controllers";
-import { AuthMiddleWare, ValidateMiddleware } from "../middlewares";
+import {
+  AuthMiddleWare,
+  ValidateMiddleware,
+  validatePayment,
+} from "../middlewares";
 import { container } from "tsyringe";
 
 const router: Router = express.Router();
@@ -16,6 +20,7 @@ router.post(
   "/transfer",
   AuthMiddleWare,
   ValidateMiddleware,
+  validatePayment,
   walletController.makeTransfer.bind(walletController),
 );
 
@@ -23,6 +28,7 @@ router.post(
   "/p2p",
   AuthMiddleWare,
   ValidateMiddleware,
+  validatePayment,
   walletController.P2P.bind(walletController),
 );
 
@@ -30,6 +36,7 @@ router.post(
   "/withdraw",
   AuthMiddleWare,
   ValidateMiddleware,
+  validatePayment,
   walletController.withdraw.bind(walletController),
 );
 

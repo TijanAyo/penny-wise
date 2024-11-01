@@ -109,21 +109,27 @@ export class AuthService {
         console.log("Got here - panic password is set");
         const isPasswordValid = await compareHash(password, user.panicPassword);
         if (!isPasswordValid) {
+          console.log("Got here - panic password is not valid");
           throw new badRequestException(
             "Invalid credentials, kindly try again",
           );
         }
 
-        await this._userRepository.updateFieldInDB(user.emailAddress, {
-          isPanicModeActive: true,
-          panicModeActiveAt: formatDate(this.NOW),
-          isAccountSuspended: true,
-        });
-      }
-
-      const isPasswordValid = await compareHash(password, user.password);
-      if (!isPasswordValid) {
-        throw new badRequestException("Invalid credentials, kindly try again");
+        if (!user.isPanicModeActive) {
+          console.log("I REACHED HERE");
+          await this._userRepository.updateFieldInDB(user.emailAddress, {
+            isPanicModeActive: true,
+            panicModeActiveAt: formatDate(this.NOW),
+            isAccountSuspended: true,
+          });
+        }
+      } else {
+        const isPasswordValid = await compareHash(password, user.password);
+        if (!isPasswordValid) {
+          throw new badRequestException(
+            "Invalid credentials, kindly try again",
+          );
+        }
       }
 
       const token = await generateAccessToken(user._id.toString());
@@ -268,6 +274,10 @@ export class AuthService {
     user: Iuser,
     password: string,
   ): Promise<boolean> {
+    if (!user.isPanicPasswordSet) {
+      return false;
+    }
+
     return await compareHash(password, user.panicPassword);
   }
 }
