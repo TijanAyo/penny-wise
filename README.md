@@ -1,8 +1,8 @@
-# Pennywise - A jeetseed inspired savings API
+# Pennywise - A JetSeed-inspired savings API
 
 ## Introduction
 
-Pennywise is a simple savings application inspired by my first saving platform, [JetSeed](https://jetseed.com).
+Pennywise is a simple savings application inspired by my first savings platform, [JetSeed](https://jetseed.com).
 It allows users to manage their finances easily and securely.
 
 ## Features
@@ -51,7 +51,7 @@ Follow these steps to set up the project locally:
 
 4. **Set up environment variables**
 
-   Create a .env file in the root directory and add your environment variables. Make use of `.env.example for reference
+   Create a `.env` file in the root directory and add your environment variables. Make use of `.env.example` for reference
 
 5. **Run the application**
 
